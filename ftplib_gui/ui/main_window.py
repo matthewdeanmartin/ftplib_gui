@@ -191,4 +191,4 @@ class MainWindow:
 
     def show_client_tab(self) -> None:
         """Bring the Client tab to the front."""
-        self.notebook.select(0)
+        self.notebook.select(0)  # type: ignore[no-untyped-call]

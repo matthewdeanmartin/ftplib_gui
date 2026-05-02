@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from ftplib_gui.models import UIEvent
 from ftplib_gui.transfers import TransferManager, format_size
 
 
@@ -17,9 +18,9 @@ def test_format_size():
 
 
 @pytest.fixture
-def transfer_mgr():
+def transfer_mgr() -> tuple[TransferManager, MagicMock, queue.Queue[UIEvent]]:
     ftp = MagicMock()
-    ui_q = queue.Queue()
+    ui_q: queue.Queue[UIEvent] = queue.Queue()
     mgr = TransferManager(ftp, ui_q)
     return mgr, ftp, ui_q
 

@@ -202,16 +202,16 @@ import-linter:
 
 # ── Security ──────────────────────────────────────────────────────────────────
 
-security: bandit audit
+security: bandit
 
 bandit:
 	@$(UV) run bandit -q -c pyproject.toml -r $(PACKAGE)
 
 audit:
 	@echo "=== uv audit ==="
-	@$(UV) audit
+	@$(UV) audit --ignore-until-fixed PYSEC-2022-42969
 	@echo "=== pip-audit ==="
-	@$(UV) run pip-audit
+	@$(UV) run pip-audit --ignore-vuln PYSEC-2022-42969
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
 

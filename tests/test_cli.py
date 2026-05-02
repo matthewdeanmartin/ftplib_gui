@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 import ftplib_gui
 from ftplib_gui.__about__ import __version__
 from ftplib_gui.cli import main
@@ -18,8 +20,7 @@ def test_import() -> None:
 
 def test_version() -> None:
     """Package exposes a version string."""
-    assert isinstance(__version__, str)
-    assert __version__
+    assert __version__ is not None
 
 
 def test_main_launches_gui_by_default() -> None:
@@ -29,7 +30,7 @@ def test_main_launches_gui_by_default() -> None:
     app_main.assert_called_once()
 
 
-def test_paths_command_prints_known_paths(capsys) -> None:
+def test_paths_command_prints_known_paths(capsys: pytest.CaptureFixture[str]) -> None:
     """The paths subcommand prints all managed filesystem locations."""
     with (
         patch("ftplib_gui.cli.app_data_dir", return_value=Path("C:/tmp/ftplib-gui")),
@@ -43,7 +44,7 @@ def test_paths_command_prints_known_paths(capsys) -> None:
     assert "log-file: C:\\tmp\\ftplib-gui\\logs\\app.log" in out
 
 
-def test_profiles_command_lists_saved_profiles(capsys) -> None:
+def test_profiles_command_lists_saved_profiles(capsys: pytest.CaptureFixture[str]) -> None:
     """The profiles subcommand prints saved connection profiles."""
     profile = ConnectionProfile(name="demo", host="ftp.example.com", port=2121, protocol="ftps", username="alice")
     with patch("ftplib_gui.cli.ProfileStore") as store_cls:

@@ -98,7 +98,7 @@ def test_passive_false_propagates() -> None:
 def test_filesystem_ops_pass_through() -> None:
     svc = FTPClientService()
     fake = MagicMock()
-    svc._ftp = fake  # type: ignore[attr-defined]
+    svc._ftp = fake
 
     svc.mkdir("/a")
     fake.mkd.assert_called_once_with("/a")

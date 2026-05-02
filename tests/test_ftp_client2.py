@@ -14,11 +14,13 @@ def test_parse_unix_list_line():
     assert entry.name == "file.txt"
     assert entry.is_dir is False
     assert entry.size == 1024
+    assert entry.modified is not None
     assert entry.modified.month == 1
     assert entry.modified.day == 1
 
     dir_line = "drwxr-xr-x 2 user group 4096 Jan 01 12:00 folder"
     entry = parse_unix_list_line(dir_line)
+    assert entry is not None
     assert entry.is_dir is True
 
 

@@ -6,9 +6,9 @@ import pathlib
 import queue
 import threading
 import time
-from typing import Callable
+from typing import Callable, cast
 
-from ftplib_gui.ftp_client import TransferCancelled
+from ftplib_gui.ftp_client import FTPClientService, TransferCancelled
 from ftplib_gui.models import UIEvent
 from ftplib_gui.transfers import (
     TransferManager,
@@ -105,7 +105,7 @@ def test_upload_completes_and_emits_events(tmp_path: pathlib.Path) -> None:
 
     ftp = FakeFTP()
     ui_q: queue.Queue[UIEvent] = queue.Queue()
-    mgr = TransferManager(ftp, ui_q)
+    mgr = TransferManager(cast(FTPClientService, ftp), ui_q)
     mgr.start()
     try:
         job = mgr.enqueue_upload(src, "/remote/f.bin")
@@ -135,7 +135,7 @@ def test_failed_upload_is_marked_failed(tmp_path: pathlib.Path) -> None:
     ftp = FakeFTP()
     ftp.fail = True
     ui_q: queue.Queue[UIEvent] = queue.Queue()
-    mgr = TransferManager(ftp, ui_q)
+    mgr = TransferManager(cast(FTPClientService, ftp), ui_q)
     mgr.start()
     try:
         job = mgr.enqueue_upload(src, "/r")
@@ -154,7 +154,7 @@ def test_clear_completed_returns_finished_ids(tmp_path: pathlib.Path) -> None:
     src.write_bytes(b"x" * 20)
     ftp = FakeFTP()
     ui_q: queue.Queue[UIEvent] = queue.Queue()
-    mgr = TransferManager(ftp, ui_q)
+    mgr = TransferManager(cast(FTPClientService, ftp), ui_q)
     mgr.start()
     try:
         job = mgr.enqueue_upload(src, "/r")

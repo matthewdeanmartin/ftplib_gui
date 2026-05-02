@@ -149,9 +149,13 @@ py_version = 39
 skip_gitignore = true
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.13"
 strict = true
 packages = ["ftplib_gui", "tests"]
+
+[[tool.mypy.overrides]]
+module = "pyftpdlib.*"
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"
