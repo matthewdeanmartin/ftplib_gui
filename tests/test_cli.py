@@ -32,16 +32,18 @@ def test_main_launches_gui_by_default() -> None:
 
 def test_paths_command_prints_known_paths(capsys: pytest.CaptureFixture[str]) -> None:
     """The paths subcommand prints all managed filesystem locations."""
+    app_data_path = Path("tmp") / "ftplib-gui"
+    log_path = app_data_path / "logs" / "app.log"
     with (
-        patch("ftplib_gui.cli.app_data_dir", return_value=Path("C:/tmp/ftplib-gui")),
-        patch("ftplib_gui.cli.log_file_path", return_value=Path("C:/tmp/ftplib-gui/logs/app.log")),
+        patch("ftplib_gui.cli.app_data_dir", return_value=app_data_path),
+        patch("ftplib_gui.cli.log_file_path", return_value=log_path),
     ):
         main(["paths"])
 
     out = capsys.readouterr().out
-    assert "app-data: C:\\tmp\\ftplib-gui" in out
-    assert "profiles: C:\\tmp\\ftplib-gui\\profiles.json" in out
-    assert "log-file: C:\\tmp\\ftplib-gui\\logs\\app.log" in out
+    assert f"app-data: {app_data_path}" in out
+    assert f"profiles: {app_data_path / 'profiles.json'}" in out
+    assert f"log-file: {log_path}" in out
 
 
 def test_profiles_command_lists_saved_profiles(capsys: pytest.CaptureFixture[str]) -> None:
