@@ -124,10 +124,10 @@ class ServerTab(ttk.Frame):  # pylint: disable=too-many-ancestors,too-many-insta
     def _wire_all_interfaces_toggle(self) -> None:
         def update(*_: object) -> None:
             if self.all_interfaces_var.get():
-                self.host_var.set("0.0.0.0")
+                self.host_var.set("0.0.0.0")  # nosec B104
                 self.host_entry.configure(state="disabled")
             else:
-                if self.host_var.get() == "0.0.0.0":
+                if self.host_var.get() == "0.0.0.0":  # nosec B104
                     self.host_var.set("127.0.0.1")
                 self.host_entry.configure(state="normal" if not self._running else "disabled")
 
@@ -181,7 +181,7 @@ class ServerTab(ttk.Frame):  # pylint: disable=too-many-ancestors,too-many-insta
         if user is None:
             return
         host = self.host_var.get() or "127.0.0.1"
-        if host in {"0.0.0.0", ""}:
+        if host in {"0.0.0.0", ""}:  # nosec B104
             host = "127.0.0.1"
         try:
             port = int(self.port_var.get() or "2121")

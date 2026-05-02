@@ -42,7 +42,7 @@ def test_listdir_os_error(tmp_path):
 
     with patch("os.DirEntry.stat", side_effect=OSError("Permission denied")):
         entries = service.listdir(tmp_path)
-        assert entries == []
+        assert not entries
 
 
 def test_mkdir(tmp_path):
