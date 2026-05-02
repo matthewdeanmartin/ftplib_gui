@@ -2,6 +2,7 @@
 
 __all__ = [
     "__credits__",
+    "__dependencies__",
     "__description__",
     "__keywords__",
     "__license__",
@@ -21,3 +22,4 @@ __keywords__ = ["ftp", "ftps", "gui", "tkinter", "file-transfer"]
 __license__ = "MIT"
 __requires_python__ = ">=3.13"
 __status__ = "4 - Beta"
+__dependencies__: list[str] = []
