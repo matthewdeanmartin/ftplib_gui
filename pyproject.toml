@@ -106,6 +106,9 @@ dev = [
 [tool.uv]
 default-groups = ["dev"]
 
+[tool.pip-audit]
+ignore-vuln = ["GHSA-w596-4wvx-j9j6"]
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["tests"]

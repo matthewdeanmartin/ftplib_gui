@@ -13,7 +13,8 @@ def test_format_size():
     assert format_size(None) == "?"
     assert format_size(500) == "500 B"
     assert format_size(1024) == "1.0 KB"
-    assert format_size(1024*1024) == "1.0 MB"
+    assert format_size(1024 * 1024) == "1.0 MB"
+
 
 @pytest.fixture
 def transfer_mgr():
@@ -21,6 +22,7 @@ def transfer_mgr():
     ui_q = queue.Queue()
     mgr = TransferManager(ftp, ui_q)
     return mgr, ftp, ui_q
+
 
 def test_enqueue_upload(transfer_mgr, tmp_path):
     mgr, _, ui_q = transfer_mgr
@@ -36,6 +38,7 @@ def test_enqueue_upload(transfer_mgr, tmp_path):
     assert event.type == "transfer_enqueued"
     assert event.payload["job"] == job
 
+
 def test_enqueue_download(transfer_mgr):
     mgr, ftp, ui_q = transfer_mgr
     ftp.is_connected.return_value = True
@@ -48,6 +51,7 @@ def test_enqueue_download(transfer_mgr):
     event = ui_q.get_nowait()
     assert event.type == "transfer_enqueued"
 
+
 def test_cancel_queued(transfer_mgr, tmp_path):
     mgr, _, _ = transfer_mgr
     f = tmp_path / "test.txt"
@@ -57,6 +61,7 @@ def test_cancel_queued(transfer_mgr, tmp_path):
     mgr.cancel(job.id)
     assert job.status == "cancelled"
     assert job.cancel_event.is_set()
+
 
 def test_clear_completed(transfer_mgr, tmp_path):
     mgr, _, _ = transfer_mgr
@@ -68,6 +73,7 @@ def test_clear_completed(transfer_mgr, tmp_path):
     removed = mgr.clear_completed()
     assert job.id in removed
     assert len(mgr.jobs()) == 0
+
 
 def test_worker_loop_upload(transfer_mgr, tmp_path):
     mgr, ftp, _ = transfer_mgr

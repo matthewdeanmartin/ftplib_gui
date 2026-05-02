@@ -21,6 +21,7 @@ def test_parse_unix_list_line():
     entry = parse_unix_list_line(dir_line)
     assert entry.is_dir is True
 
+
 @patch("ftplib.FTP")
 def test_connect_ftp(mock_ftp_cls):
     mock_ftp = mock_ftp_cls.return_value
@@ -32,6 +33,7 @@ def test_connect_ftp(mock_ftp_cls):
     mock_ftp.login.assert_called_once()
     assert service.is_connected() is True
 
+
 @patch("ftplib.FTP_TLS")
 @patch("ssl.create_default_context")
 def test_connect_ftps(mock_ssl_ctx, mock_ftps_cls):
@@ -42,6 +44,7 @@ def test_connect_ftps(mock_ssl_ctx, mock_ftps_cls):
     service.connect(profile)
     mock_ftps_cls.assert_called_once()
     mock_ftps.prot_p.assert_called_once()
+
 
 def test_listdir_mlsd():
     service = FTPClientService()
@@ -57,6 +60,7 @@ def test_listdir_mlsd():
     assert entries[0].size == 100
     assert entries[1].is_dir is True
 
+
 def test_listdir_list_fallback():
     service = FTPClientService()
     service._ftp = MagicMock()
@@ -71,17 +75,20 @@ def test_listdir_list_fallback():
     assert len(entries) == 1
     assert entries[0].name == "file.txt"
 
+
 def test_mkdir():
     service = FTPClientService()
     service._ftp = MagicMock()
     service.mkdir("/test")
     service._ftp.mkd.assert_called_once_with("/test")
 
+
 def test_delete_file():
     service = FTPClientService()
     service._ftp = MagicMock()
     service.delete_file("/test.txt")
     service._ftp.delete.assert_called_once_with("/test.txt")
+
 
 def test_rename():
     service = FTPClientService()

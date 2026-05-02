@@ -13,6 +13,7 @@ def test_home():
     with patch("pathlib.Path.home", return_value=pathlib.Path("/home/user")):
         assert service.home() == pathlib.Path("/home/user")
 
+
 def test_listdir(tmp_path):
     service = LocalFileService()
     (tmp_path / "dir").mkdir()
@@ -34,6 +35,7 @@ def test_listdir(tmp_path):
     assert len(entries_all) == 3
     assert any(e.name == ".hidden" for e in entries_all)
 
+
 def test_listdir_os_error(tmp_path):
     service = LocalFileService()
     (tmp_path / "broken").mkdir()
@@ -41,6 +43,7 @@ def test_listdir_os_error(tmp_path):
     with patch("os.DirEntry.stat", side_effect=OSError("Permission denied")):
         entries = service.listdir(tmp_path)
         assert entries == []
+
 
 def test_mkdir(tmp_path):
     service = LocalFileService()
@@ -52,12 +55,14 @@ def test_mkdir(tmp_path):
     with pytest.raises(FileExistsError):
         service.mkdir(new_dir)
 
+
 def test_delete_file(tmp_path):
     service = LocalFileService()
     f = tmp_path / "test.txt"
     f.write_text("data")
     service.delete(f)
     assert not f.exists()
+
 
 def test_delete_dir(tmp_path):
     service = LocalFileService()
@@ -67,6 +72,7 @@ def test_delete_dir(tmp_path):
     service.delete(d)
     assert not d.exists()
 
+
 def test_rename(tmp_path):
     service = LocalFileService()
     f = tmp_path / "old.txt"
@@ -75,6 +81,7 @@ def test_rename(tmp_path):
     service.rename(f, new_f)
     assert not f.exists()
     assert new_f.exists()
+
 
 def test_iter_files(tmp_path):
     service = LocalFileService()

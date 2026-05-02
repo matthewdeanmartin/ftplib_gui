@@ -12,16 +12,20 @@ from ftplib_gui.profiles import ProfileStore
 def profile_file(tmp_path):
     return tmp_path / "profiles.json"
 
+
 @pytest.fixture
 def store(profile_file):
     return ProfileStore(path=profile_file)
 
+
 def test_load_empty(store):
     assert store.load() == []
+
 
 def test_load_malformed(store, profile_file):
     profile_file.write_text("invalid json")
     assert store.load() == []
+
 
 def test_save_and_load(store, profile_file):
     p1 = ConnectionProfile(name="test1", host="example.com")
@@ -34,6 +38,7 @@ def test_save_and_load(store, profile_file):
     assert loaded[0].name == "test1"
     assert loaded[1].port == 2121
 
+
 def test_upsert(store):
     p1 = ConnectionProfile(name="test1", host="example.com")
     store.upsert(p1)
@@ -45,6 +50,7 @@ def test_upsert(store):
     assert len(loaded) == 1
     assert loaded[0].host == "updated.com"
 
+
 def test_delete(store):
     p1 = ConnectionProfile(name="test1", host="example.com")
     store.upsert(p1)
@@ -53,6 +59,7 @@ def test_delete(store):
     assert store.load() == []
     assert store.delete("test1") is False
 
+
 @patch("ftplib_gui.profiles._try_import_keyring")
 def test_keyring_available(mock_keyring, store):
     mock_keyring.return_value = MagicMock()
@@ -60,6 +67,7 @@ def test_keyring_available(mock_keyring, store):
 
     mock_keyring.return_value = None
     assert store.keyring_available() is False
+
 
 @patch("ftplib_gui.profiles._try_import_keyring")
 def test_read_write_password(mock_keyring, store):

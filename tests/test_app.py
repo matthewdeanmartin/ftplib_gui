@@ -16,6 +16,7 @@ def app():
         controller = AppController(args=args)
         return controller
 
+
 def test_handle_connected(app):
     profile = ConnectionProfile(name="test", host="localhost")
     event = UIEvent("connected", {"profile": profile, "cwd": "/", "entries": []})
@@ -23,6 +24,7 @@ def test_handle_connected(app):
     app._handle_event(event)
     assert app._connected is True
     app.window.remote_browser.show_entries.assert_called_once_with("/", [])
+
 
 def test_handle_connection_failed(app):
     event = UIEvent("connection_failed", {"error": "timeout"})
@@ -32,6 +34,7 @@ def test_handle_connection_failed(app):
         assert app._connected is False
         mock_err.assert_called_once()
 
+
 def test_apply_cli_args_profile(app):
     app._args = argparse.Namespace(profile="myprofile")
     p1 = ConnectionProfile(name="myprofile", host="localhost")
@@ -39,6 +42,7 @@ def test_apply_cli_args_profile(app):
     with patch.object(app.profile_store, "load", return_value=[p1]):
         app._apply_cli_args()
         app.window.connection_bar.populate.assert_called_once_with(p1)
+
 
 def test_apply_cli_args_host(app):
     app._args = argparse.Namespace(host="ftp.site.com", port=2121, protocol="ftps")
@@ -50,6 +54,7 @@ def test_apply_cli_args_host(app):
     assert call_args.port == 2121
     assert call_args.protocol == "ftps"
 
+
 def test_submit_ftp(app):
     mock_func = MagicMock()
     app._submit_ftp(mock_func)
@@ -57,6 +62,7 @@ def test_submit_ftp(app):
     # Manually pull from queue since we don't want to start the thread
     job = app._ftp_jobs.get_nowait()
     assert job == mock_func
+
 
 def test_refresh_status_disconnected(app):
     app._connected = False
