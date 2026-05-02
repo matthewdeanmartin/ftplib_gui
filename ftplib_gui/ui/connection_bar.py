@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Callable, Optional
+from typing import Callable
 
 from ftplib_gui.models import ConnectionProfile
 
 
-class ConnectionBar(ttk.Frame):
+class ConnectionBar(ttk.Frame):  # pylint: disable=too-many-ancestors
     """Toolbar holding host/port/credentials and connect/disconnect buttons."""
 
     def __init__(
@@ -148,7 +148,7 @@ class ConnectionBar(ttk.Frame):
         self.anonymous_var.set(profile.anonymous)
         self.verify_tls_var.set(profile.verify_tls)
 
-    def get_profile(self) -> Optional[ConnectionProfile]:
+    def get_profile(self) -> ConnectionProfile | None:
         """Return the profile currently shown in the toolbar."""
         if not self.host_var.get():
             return None

@@ -1,14 +1,15 @@
 """Smoke tests for the CLI entry point."""
 
+import ftplib_gui
+from ftplib_gui.__about__ import __version__
+
 
 def test_import() -> None:
     """Package can be imported."""
-    import ftplib_gui  # noqa: F401
+    assert ftplib_gui.__version__ == __version__
 
 
 def test_version() -> None:
     """Package exposes a version string."""
-    from ftplib_gui.__about__ import __version__
-
     assert isinstance(__version__, str)
     assert __version__

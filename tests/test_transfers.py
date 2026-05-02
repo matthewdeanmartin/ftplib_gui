@@ -8,6 +8,7 @@ import threading
 import time
 from typing import Callable
 
+from ftplib_gui.ftp_client import TransferCancelled
 from ftplib_gui.models import UIEvent
 from ftplib_gui.transfers import (
     TransferManager,
@@ -70,8 +71,6 @@ class FakeFTP:
             raise RuntimeError("boom")
         for _ in range(5):
             if cancel_event.is_set():
-                from ftplib_gui.ftp_client import TransferCancelled
-
                 raise TransferCancelled()
             progress_callback(20)
         self.uploaded.append((local_path, remote_path))
@@ -167,4 +166,4 @@ def test_clear_completed_returns_finished_ids(tmp_path: pathlib.Path) -> None:
 
     removed = mgr.clear_completed()
     assert job.id in removed
-    assert mgr.jobs() == []
+    assert not mgr.jobs()

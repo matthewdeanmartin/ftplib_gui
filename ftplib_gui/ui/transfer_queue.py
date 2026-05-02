@@ -5,13 +5,13 @@ from __future__ import annotations
 import time
 import tkinter as tk
 from tkinter import ttk
-from typing import Callable, Optional
+from typing import Callable, Literal
 
 from ftplib_gui.models import TransferJob
 from ftplib_gui.transfers import format_eta, format_size, format_speed
 
 
-class TransferQueueView(ttk.Frame):
+class TransferQueueView(ttk.Frame):  # pylint: disable=too-many-ancestors
     """Displays transfer status with cancel / retry / clear actions."""
 
     def __init__(
@@ -38,7 +38,8 @@ class TransferQueueView(ttk.Frame):
 
         columns = ("direction", "source", "destination", "size", "progress", "status", "speed", "eta")
         self.tree = ttk.Treeview(self, columns=columns, show="headings", selectmode="extended", height=6)
-        for col, label, width, anchor in [
+
+        column_configs: list[tuple[str, str, int, Literal["nw", "n", "ne", "w", "center", "e", "sw", "s", "se"]]] = [
             ("direction", "Direction", 80, "w"),
             ("source", "Source", 220, "w"),
             ("destination", "Destination", 220, "w"),
@@ -47,7 +48,9 @@ class TransferQueueView(ttk.Frame):
             ("status", "Status", 90, "w"),
             ("speed", "Speed", 90, "e"),
             ("eta", "ETA", 70, "e"),
-        ]:
+        ]
+
+        for col, label, width, anchor in column_configs:
             self.tree.heading(col, text=label)
             self.tree.column(col, width=width, anchor=anchor)
 
@@ -94,7 +97,7 @@ class TransferQueueView(ttk.Frame):
             if self.tree.exists(jid):
                 self.tree.delete(jid)
 
-    def selected_id(self) -> Optional[str]:
+    def selected_id(self) -> str | None:
         """Return the first selected job id, if any."""
         sel = self.tree.selection()
         return sel[0] if sel else None

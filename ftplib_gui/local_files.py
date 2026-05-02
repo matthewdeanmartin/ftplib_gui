@@ -5,8 +5,8 @@ from __future__ import annotations
 import os
 import pathlib
 import shutil
-from datetime import datetime
 from collections.abc import Iterable
+from datetime import datetime
 
 from ftplib_gui.models import LocalEntry
 

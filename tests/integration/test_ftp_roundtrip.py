@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import ftplib
 import pathlib
+import queue
 import threading
 import time
 
 import pytest
 
 from ftplib_gui.ftp_client import FTPClientService
-from ftplib_gui.models import ConnectionProfile
+from ftplib_gui.models import ConnectionProfile, UIEvent
+from ftplib_gui.transfers import TransferManager
 
 from .conftest import RunningServer
 
@@ -92,11 +95,6 @@ def test_mkdir_rename_delete(ftp_server: RunningServer) -> None:
 
 def test_transfer_manager_drives_uploads(ftp_server: RunningServer, tmp_path: pathlib.Path) -> None:
     """End-to-end test through TransferManager + FTPClientService."""
-    import queue
-
-    from ftplib_gui.models import UIEvent
-    from ftplib_gui.transfers import TransferManager
-
     src = tmp_path / "queued.bin"
     src.write_bytes(b"abc" * 500)
 
@@ -123,5 +121,5 @@ def test_login_failure_raises(ftp_server: RunningServer, anonymous: bool) -> Non
     bad.password = "wrong"
     bad.anonymous = anonymous
     svc = FTPClientService()
-    with pytest.raises(Exception):
+    with pytest.raises(ftplib.all_errors):
         svc.connect(bad)

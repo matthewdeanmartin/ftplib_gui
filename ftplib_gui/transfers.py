@@ -12,14 +12,14 @@ import pathlib
 import queue
 import threading
 import time
-from typing import Optional
+from typing import Any
 
 from ftplib_gui.ftp_client import FTPClientService, TransferCancelled
 from ftplib_gui.logging_utils import get_logger
 from ftplib_gui.models import TransferJob, UIEvent
 
 
-def format_size(num_bytes: Optional[int]) -> str:
+def format_size(num_bytes: int | None) -> str:
     """Render a byte count as a short human string."""
     if num_bytes is None:
         return "?"
@@ -41,7 +41,7 @@ def format_speed(bytes_done: int, elapsed_seconds: float) -> str:
     return format_size(int(bytes_done / elapsed_seconds)) + "/s"
 
 
-def format_eta(total: Optional[int], bytes_done: int, elapsed_seconds: float) -> str:
+def format_eta(total: int | None, bytes_done: int, elapsed_seconds: float) -> str:
     """Render a remaining-time estimate, or ``—`` if unknown."""
     if total is None or total <= 0 or elapsed_seconds <= 0 or bytes_done <= 0:
         return "—"
@@ -68,10 +68,10 @@ class TransferManager:
     def __init__(self, ftp_service: FTPClientService, ui_queue: queue.Queue[UIEvent]) -> None:
         self._ftp = ftp_service
         self._ui = ui_queue
-        self._jobs: queue.Queue[Optional[TransferJob]] = queue.Queue()
+        self._jobs: queue.Queue[TransferJob | None] = queue.Queue()
         self._index: dict[str, TransferJob] = {}
         self._lock = threading.RLock()
-        self._worker: Optional[threading.Thread] = None
+        self._worker: threading.Thread | None = None
         self._stopped = threading.Event()
         self._log = get_logger()
 
@@ -139,7 +139,7 @@ class TransferManager:
             job.status = "cancelled"
             self._emit("transfer_cancelled", {"job": job})
 
-    def retry(self, job_id: str) -> Optional[TransferJob]:
+    def retry(self, job_id: str) -> TransferJob | None:
         """Re-enqueue a failed/cancelled job as a fresh job."""
         with self._lock:
             old = self._index.get(job_id)
@@ -219,7 +219,7 @@ class TransferManager:
             job.finished_at = time.monotonic()
             self._emit("transfer_cancelled", {"job": job})
             return
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             job.status = "failed"
             job.error = str(exc)
             job.finished_at = time.monotonic()
@@ -234,5 +234,5 @@ class TransferManager:
     # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
-    def _emit(self, event_type: str, payload: dict) -> None:
+    def _emit(self, event_type: str, payload: dict[str, Any]) -> None:
         self._ui.put(UIEvent(type=event_type, payload=payload))

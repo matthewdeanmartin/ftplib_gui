@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 LABEL maintainer="matthewdeanmartin@gmail.com"
 LABEL description="A GUI front-end for Python's ftplib"

@@ -12,26 +12,26 @@ from __future__ import annotations
 import pathlib
 import tkinter as tk
 from datetime import datetime
-from tkinter import ttk
-from typing import Callable, Optional
+from tkinter import filedialog, ttk
+from typing import Callable
 
 from ftplib_gui.local_files import LocalFileService
 from ftplib_gui.models import LocalEntry, RemoteEntry
 from ftplib_gui.transfers import format_size
 
 
-def _fmt_dt(dt: Optional[datetime]) -> str:
+def _fmt_dt(dt: datetime | None) -> str:
     return dt.strftime("%Y-%m-%d %H:%M") if dt else ""
 
 
-class LocalBrowser(ttk.Frame):
+class LocalBrowser(ttk.Frame):  # pylint: disable=too-many-ancestors
     """Pane for browsing the local filesystem."""
 
     def __init__(
         self,
         master: tk.Misc,
         service: LocalFileService,
-        on_selection_change: Optional[Callable[[list[LocalEntry]], None]] = None,
+        on_selection_change: Callable[[list[LocalEntry]], None] | None = None,
     ) -> None:
         super().__init__(master, padding=2)
         self._service = service
@@ -142,8 +142,6 @@ class LocalBrowser(ttk.Frame):
             self.refresh()
 
     def _choose_folder(self) -> None:
-        from tkinter import filedialog
-
         chosen = filedialog.askdirectory(initialdir=str(self._cwd))
         if chosen:
             self._cwd = pathlib.Path(chosen)
@@ -160,7 +158,7 @@ class LocalBrowser(ttk.Frame):
             self._on_selection_change(self.selected())
 
 
-class RemoteBrowser(ttk.Frame):
+class RemoteBrowser(ttk.Frame):  # pylint: disable=too-many-ancestors
     """Pane that displays the remote working directory."""
 
     def __init__(
@@ -168,7 +166,7 @@ class RemoteBrowser(ttk.Frame):
         master: tk.Misc,
         on_navigate: Callable[[str], None],
         on_refresh: Callable[[], None],
-        on_selection_change: Optional[Callable[[list[RemoteEntry]], None]] = None,
+        on_selection_change: Callable[[list[RemoteEntry]], None] | None = None,
     ) -> None:
         super().__init__(master, padding=2)
         self._on_navigate = on_navigate

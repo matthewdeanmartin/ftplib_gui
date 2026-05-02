@@ -15,7 +15,7 @@ def make_store(tmp_path: pathlib.Path) -> ProfileStore:
 
 def test_load_missing_file_returns_empty(tmp_path: pathlib.Path) -> None:
     store = make_store(tmp_path)
-    assert store.load() == []
+    assert not store.load()
 
 
 def test_save_and_load_roundtrip(tmp_path: pathlib.Path) -> None:
@@ -69,4 +69,4 @@ def test_delete_removes_profile(tmp_path: pathlib.Path) -> None:
 def test_load_ignores_corrupt_file(tmp_path: pathlib.Path) -> None:
     store = make_store(tmp_path)
     store.path.write_text("{ not json", encoding="utf-8")
-    assert store.load() == []
+    assert not store.load()

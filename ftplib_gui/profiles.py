@@ -9,10 +9,11 @@ OS-native credential store.
 from __future__ import annotations
 
 import contextlib
+import importlib
 import json
 import os
 import pathlib
-from typing import Optional
+from typing import Any
 
 from ftplib_gui.logging_utils import app_data_dir, get_logger
 from ftplib_gui.models import ConnectionProfile
@@ -20,12 +21,10 @@ from ftplib_gui.models import ConnectionProfile
 _KEYRING_SERVICE = "ftplib_gui"
 
 
-def _try_import_keyring():
+def _try_import_keyring() -> Any:
     """Import ``keyring`` lazily so it stays an optional dependency."""
     try:
-        import keyring  # type: ignore[import-not-found]
-
-        return keyring
+        return importlib.import_module("keyring")
     except ImportError:
         return None
 
@@ -33,7 +32,7 @@ def _try_import_keyring():
 class ProfileStore:
     """Load and save :class:`ConnectionProfile` records to disk."""
 
-    def __init__(self, path: Optional[pathlib.Path] = None) -> None:
+    def __init__(self, path: pathlib.Path | None = None) -> None:
         self.path = path or (app_data_dir() / "profiles.json")
         self._log = get_logger()
 
@@ -112,13 +111,14 @@ class ProfileStore:
     def _keyring_username(self, profile: ConnectionProfile) -> str:
         return f"{profile.name}::{profile.host}::{profile.username}"
 
-    def _read_password(self, profile: ConnectionProfile) -> Optional[str]:
+    def _read_password(self, profile: ConnectionProfile) -> str | None:
         keyring = _try_import_keyring()
         if keyring is None:
             return None
         try:
-            return keyring.get_password(_KEYRING_SERVICE, self._keyring_username(profile))
-        except Exception as exc:
+            val = keyring.get_password(_KEYRING_SERVICE, self._keyring_username(profile))
+            return str(val) if val is not None else None
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._log.warning("Keyring read failed: %s", exc)
             return None
 
@@ -126,12 +126,12 @@ class ProfileStore:
         keyring = _try_import_keyring()
         if keyring is None:
             self._log.warning(
-                "save_password=True but the 'keyring' extra is not installed; " "password will not be stored."
+                "save_password=True but the 'keyring' extra is not installed; password will not be stored."
             )
             return
         try:
             keyring.set_password(_KEYRING_SERVICE, self._keyring_username(profile), profile.password)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._log.warning("Keyring write failed: %s", exc)
 
     def _delete_password(self, profile: ConnectionProfile) -> None:

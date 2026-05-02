@@ -12,20 +12,28 @@ If neither is installed, the integration tests are skipped automatically.
 from __future__ import annotations
 
 import contextlib
+import importlib
 import importlib.util
 import pathlib
 import socket
 import threading
 import time
-from dataclasses import dataclass
-from typing import Optional
 from collections.abc import Iterator
+from dataclasses import dataclass
+from typing import Any
 
 import pytest
 
 
 def _has(module_name: str) -> bool:
     return importlib.util.find_spec(module_name) is not None
+
+
+def _load_pyftpdlib() -> tuple[type[Any], type[Any], type[Any]]:
+    authorizers = importlib.import_module("pyftpdlib.authorizers")
+    handlers = importlib.import_module("pyftpdlib.handlers")
+    servers = importlib.import_module("pyftpdlib.servers")
+    return authorizers.DummyAuthorizer, handlers.FTPHandler, servers.FTPServer
 
 
 HAS_PYFTPDLIB = _has("pyftpdlib")
@@ -51,9 +59,7 @@ def _free_port() -> int:
 
 @contextlib.contextmanager
 def _run_pyftpdlib(root: pathlib.Path) -> Iterator[RunningServer]:
-    from pyftpdlib.authorizers import DummyAuthorizer
-    from pyftpdlib.handlers import FTPHandler
-    from pyftpdlib.servers import FTPServer
+    DummyAuthorizer, FTPHandler, FTPServer = _load_pyftpdlib()
 
     user, password = "user", "pass"
     port = _free_port()
@@ -91,17 +97,13 @@ def _run_python_ftp_server(root: pathlib.Path) -> Iterator[RunningServer]:
     surface. If the public surface ever changes, we fall back to
     pyftpdlib directly.
     """
-    try:
-        import python_ftp_server  # noqa: F401
-    except ImportError:  # pragma: no cover - guarded by HAS_PYTHON_FTP_SERVER
+    if not HAS_PYTHON_FTP_SERVER:  # pragma: no cover - guarded by fixture params
         pytest.skip("python-ftp-server not installed")
 
     # python-ftp-server exposes a CLI but no stable programmatic API; use
     # pyftpdlib directly with a different user name so the two backends
     # are visibly distinguishable to anyone reading the test logs.
-    from pyftpdlib.authorizers import DummyAuthorizer
-    from pyftpdlib.handlers import FTPHandler
-    from pyftpdlib.servers import FTPServer
+    DummyAuthorizer, FTPHandler, FTPServer = _load_pyftpdlib()
 
     user, password = "pfs_user", "pfs_pass"
     port = _free_port()
@@ -137,7 +139,7 @@ _BACKENDS: list[tuple[str, bool]] = [
 def ftp_server(request: pytest.FixtureRequest, tmp_path: pathlib.Path) -> Iterator[RunningServer]:
     """Yield a running FTP server for one of the available backends."""
     backend: str = request.param
-    runner: Optional[contextlib.AbstractContextManager[RunningServer]]
+    runner: contextlib.AbstractContextManager[RunningServer] | None
     if backend == "pyftpdlib":
         runner = _run_pyftpdlib(tmp_path)
     elif backend == "python-ftp-server":

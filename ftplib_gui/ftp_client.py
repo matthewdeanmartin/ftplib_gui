@@ -7,16 +7,19 @@ expected to be run from worker threads.
 
 from __future__ import annotations
 
+import contextlib
 import ftplib
 import posixpath
 import re
 import ssl
 import threading
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Callable
 
 from ftplib_gui.logging_utils import get_logger
 from ftplib_gui.models import ConnectionProfile, RemoteEntry
+
+_ANONYMOUS_LOGIN_EMAIL = "anonymous@"
 
 
 class TransferCancelled(Exception):
@@ -51,7 +54,17 @@ _MONTHS = {
 }
 
 
-def parse_unix_list_line(line: str, now: Optional[datetime] = None) -> Optional[RemoteEntry]:
+def _build_tls_context(verify_tls: bool) -> ssl.SSLContext:
+    """Build an FTPS SSL context with optional certificate verification."""
+    if verify_tls:
+        return ssl.create_default_context()
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+def parse_unix_list_line(line: str, now: datetime | None = None) -> RemoteEntry | None:
     """Parse a single Unix-style ``LIST`` output line.
 
     Returns ``None`` if the line could not be parsed.
@@ -69,7 +82,7 @@ def parse_unix_list_line(line: str, now: Optional[datetime] = None) -> Optional[
     day = int(match.group("day"))
     rest = match.group("rest")
 
-    modified: Optional[datetime] = None
+    modified: datetime | None = None
     if mon is not None:
         anchor = now or datetime.now()
         try:
@@ -101,8 +114,8 @@ class FTPClientService:
     """
 
     def __init__(self) -> None:
-        self._ftp: Optional[ftplib.FTP] = None
-        self._profile: Optional[ConnectionProfile] = None
+        self._ftp: ftplib.FTP | None = None
+        self._profile: ConnectionProfile | None = None
         self._lock = threading.RLock()
         self._log = get_logger()
 
@@ -116,10 +129,9 @@ class FTPClientService:
 
             is_tls = profile.protocol == "ftps"
             if is_tls:
-                if profile.verify_tls:
-                    context = ssl.create_default_context()
-                else:
-                    context = ssl._create_unverified_context()
+                context = _build_tls_context(profile.verify_tls)
+                if not profile.verify_tls:
+                    self._log.warning("TLS certificate verification is disabled for %s", profile.host)
                 ftp: ftplib.FTP = ftplib.FTP_TLS(context=context)
             else:
                 ftp = ftplib.FTP()
@@ -128,7 +140,7 @@ class FTPClientService:
             ftp.connect(host=profile.host, port=profile.port, timeout=30)
 
             if profile.anonymous:
-                ftp.login(user="anonymous", passwd="anonymous@")
+                ftp.login(user="anonymous", passwd=_ANONYMOUS_LOGIN_EMAIL)
             else:
                 ftp.login(user=profile.username, passwd=profile.password)
 
@@ -152,11 +164,9 @@ class FTPClientService:
             return
         try:
             self._ftp.quit()
-        except Exception:
-            try:
+        except Exception:  # pylint: disable=broad-exception-caught
+            with contextlib.suppress(Exception):
                 self._ftp.close()
-            except Exception:
-                pass
         self._ftp = None
 
     def is_connected(self) -> bool:
@@ -165,7 +175,7 @@ class FTPClientService:
             return self._ftp is not None and self._ftp.sock is not None
 
     @property
-    def profile(self) -> Optional[ConnectionProfile]:
+    def profile(self) -> ConnectionProfile | None:
         """Return the active profile, or ``None`` if not connected."""
         return self._profile
 
@@ -197,7 +207,7 @@ class FTPClientService:
     # ------------------------------------------------------------------
     # listing
     # ------------------------------------------------------------------
-    def listdir(self, path: Optional[str] = None) -> list[RemoteEntry]:
+    def listdir(self, path: str | None = None) -> list[RemoteEntry]:
         """List remote entries, preferring ``MLSD`` and falling back to ``LIST``/``NLST``."""
         with self._lock:
             self._require_connected()
@@ -214,7 +224,7 @@ class FTPClientService:
                     is_dir = entry_type == "dir"
                     size = int(facts["size"]) if "size" in facts else None
                     modify = facts.get("modify")
-                    modified: Optional[datetime] = None
+                    modified: datetime | None = None
                     if modify:
                         try:
                             modified = datetime.strptime(modify[:14], "%Y%m%d%H%M%S")
@@ -274,7 +284,7 @@ class FTPClientService:
     # ------------------------------------------------------------------
     # transfers
     # ------------------------------------------------------------------
-    def size(self, remote_path: str) -> Optional[int]:
+    def size(self, remote_path: str) -> int | None:
         """Return the size of ``remote_path`` in bytes, or ``None`` if unknown."""
         with self._lock:
             self._require_connected()
@@ -341,11 +351,9 @@ class FTPClientService:
 
     def _reset_after_cancel(self) -> None:
         """Close the data connection after a cancelled transfer."""
-        try:
+        with contextlib.suppress(Exception):
             assert self._ftp is not None
             self._ftp.close()
-        except Exception:
-            pass
         self._ftp = None
 
     # ------------------------------------------------------------------

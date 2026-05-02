@@ -10,11 +10,11 @@ from __future__ import annotations
 import logging
 import logging.handlers
 import pathlib
-from typing import Callable, Optional
+from typing import Callable
 
 LOGGER_NAME = "ftplib_gui"
 
-_GUI_HANDLER: Optional[GuiLogHandler] = None
+_GUI_HANDLER: GuiLogHandler | None = None
 
 
 def app_data_dir() -> pathlib.Path:
@@ -48,7 +48,7 @@ class GuiLogHandler(logging.Handler):
         try:
             msg = self.format(record)
             self.sink(msg)
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             self.handleError(record)
 
 
@@ -77,6 +77,7 @@ def configure_logging(debug: bool = False) -> logging.Logger:
         encoding="utf-8",
     )
     file_handler.setFormatter(fmt)
+    # pylint: disable=attribute-defined-outside-init,protected-access
     file_handler._ftplib_gui_managed = True  # type: ignore[attr-defined]
     logger.addHandler(file_handler)
 
@@ -85,7 +86,7 @@ def configure_logging(debug: bool = False) -> logging.Logger:
 
 def attach_gui_sink(sink: Callable[[str], None]) -> GuiLogHandler:
     """Attach a GUI sink so log records also flow into the log panel."""
-    global _GUI_HANDLER
+    global _GUI_HANDLER  # pylint: disable=global-statement
     logger = logging.getLogger(LOGGER_NAME)
     if _GUI_HANDLER is not None:
         logger.removeHandler(_GUI_HANDLER)
@@ -97,6 +98,7 @@ def attach_gui_sink(sink: Callable[[str], None]) -> GuiLogHandler:
             datefmt="%Y-%m-%d %H:%M:%S",
         )
     )
+    # pylint: disable=attribute-defined-outside-init,protected-access
     handler._ftplib_gui_managed = True  # type: ignore[attr-defined]
     logger.addHandler(handler)
     _GUI_HANDLER = handler

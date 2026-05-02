@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 keywords = ["ftplib_gui"]
 license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -182,7 +182,12 @@ convention = "google"
 
 [tool.bandit]
 exclude_dirs = ["tests"]
-skips = ["B101"]
+skips = [
+    "B101",  # assert usage in tests
+    "B105",  # false positive on clearing transient password fields
+    "B321",  # plain FTP calls are intrinsic to this FTP/FTPS client
+    "B402",  # ftplib imports are intrinsic to this FTP/FTPS client
+]
 
 [tool.coverage.report]
 exclude_also = [

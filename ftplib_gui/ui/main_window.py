@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import tkinter as tk
 from tkinter import ttk
 from typing import TYPE_CHECKING
@@ -151,15 +152,11 @@ class MainWindow:
 
     def _toggle_log(self) -> None:
         if self.show_log_var.get():
-            try:
+            with contextlib.suppress(tk.TclError):
                 self.main_paned.add(self.log_panel, weight=1)
-            except tk.TclError:
-                pass
         else:
-            try:
+            with contextlib.suppress(tk.TclError):
                 self.main_paned.forget(self.log_panel)
-            except tk.TclError:
-                pass
 
     def _toggle_hidden(self) -> None:
         self.local_browser.set_show_hidden(self.show_hidden_var.get())

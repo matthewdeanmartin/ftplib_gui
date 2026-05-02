@@ -10,14 +10,17 @@ thread; UI updates happen via :class:`UIEvent` messages drained from
 from __future__ import annotations
 
 import argparse
+import contextlib
 import pathlib
 import posixpath
 import queue
+import sys
 import threading
 import webbrowser
 from tkinter import messagebox, simpledialog
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
+from ftplib_gui.__about__ import __version__
 from ftplib_gui.ftp_client import FTPClientService
 from ftplib_gui.local_files import LocalFileService
 from ftplib_gui.logging_utils import attach_gui_sink, configure_logging, get_logger
@@ -32,7 +35,7 @@ PYTHON_FTPLIB_DOC_URL = "https://docs.python.org/3/library/ftplib.html"
 class AppController:
     """Mediator between the UI, services, and worker threads."""
 
-    def __init__(self, args: Optional[argparse.Namespace] = None) -> None:
+    def __init__(self, args: argparse.Namespace | None = None) -> None:
         self._args = args
         self._log = get_logger()
 
@@ -47,7 +50,7 @@ class AppController:
 
         # Background executor for non-transfer FTP work (connect, listdir, mkdir, rm, rename).
         # A single thread keeps things simple and matches the spec ("one transfer at a time").
-        self._ftp_jobs: queue.Queue[Optional[Callable[[], None]]] = queue.Queue()
+        self._ftp_jobs: queue.Queue[Callable[[], None] | None] = queue.Queue()
         self._ftp_thread = threading.Thread(target=self._run_ftp_jobs, daemon=True, name="ftplib-gui-ftp")
 
         self.window: MainWindow = MainWindow(self)
@@ -75,10 +78,8 @@ class AppController:
         """Stop worker threads and tear down the FTP connection."""
         self.transfer_manager.stop()
         self._ftp_jobs.put(None)
-        try:
+        with contextlib.suppress(Exception):
             self.ftp_service.disconnect()
-        except Exception:
-            pass
 
     # ------------------------------------------------------------------
     # CLI bootstrap
@@ -94,7 +95,7 @@ class AppController:
             except OSError as exc:
                 self._log.warning("Could not navigate to %s: %s", args.local_dir, exc)
 
-        profile_to_use: Optional[ConnectionProfile] = None
+        profile_to_use: ConnectionProfile | None = None
         if getattr(args, "profile", None):
             for profile in self.profile_store.load():
                 if profile.name == args.profile:
@@ -131,7 +132,8 @@ class AppController:
         if profile.protocol == "ftps" and not profile.verify_tls:
             ok = messagebox.askokcancel(
                 "TLS Verification Disabled",
-                "TLS certificate verification is disabled. Your connection may be vulnerable to interception.\n\nProceed?",
+                "TLS certificate verification is disabled. Your connection may be vulnerable to interception.\n\n"
+                "Proceed?",
             )
             if not ok:
                 return
@@ -143,7 +145,7 @@ class AppController:
     def _connect_blocking(self, profile: ConnectionProfile) -> None:
         try:
             self.ftp_service.connect(profile)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._log.exception("Connection failed: %s", exc)
             self._ui_queue.put(UIEvent("connection_failed", {"error": str(exc)}))
             return
@@ -154,13 +156,11 @@ class AppController:
                 self.ftp_service.cwd(profile.default_remote_dir)
             entries = self.ftp_service.listdir()
             cwd = self.ftp_service.pwd()
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._log.exception("Initial listing failed: %s", exc)
             self._ui_queue.put(UIEvent("connection_failed", {"error": str(exc)}))
-            try:
+            with contextlib.suppress(Exception):
                 self.ftp_service.disconnect()
-            except Exception:
-                pass
             return
 
         self._ui_queue.put(
@@ -174,7 +174,7 @@ class AppController:
     def _disconnect_blocking(self) -> None:
         try:
             self.ftp_service.disconnect()
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._log.exception("Disconnect failed: %s", exc)
         self._ui_queue.put(UIEvent("disconnected", {}))
 
@@ -192,7 +192,7 @@ class AppController:
             self.ftp_service.cwd(path)
             cwd = self.ftp_service.pwd()
             entries = self.ftp_service.listdir()
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._ui_queue.put(UIEvent("error", {"error": str(exc), "where": "navigate_remote"}))
             return
         self._ui_queue.put(UIEvent("remote_list_loaded", {"cwd": cwd, "entries": entries}))
@@ -201,7 +201,7 @@ class AppController:
         try:
             cwd = self.ftp_service.pwd()
             entries = self.ftp_service.listdir()
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._ui_queue.put(UIEvent("error", {"error": str(exc), "where": "refresh_remote"}))
             return
         self._ui_queue.put(UIEvent("remote_list_loaded", {"cwd": cwd, "entries": entries}))
@@ -235,7 +235,10 @@ class AppController:
             messagebox.showinfo("Profiles", "No saved profiles.")
             return
         names = "\n".join(f"- {p.name} ({p.host})" for p in profiles)
-        chosen = simpledialog.askstring("Open Profile", f"Available profiles:\n{names}\n\nEnter profile name:")
+        chosen = simpledialog.askstring(
+            "Open Profile",
+            f"Available profiles:\n{names}\n\nEnter profile name:",
+        )
         if not chosen:
             return
         for profile in profiles:
@@ -307,7 +310,7 @@ class AppController:
     def _remote_rename_blocking(self, old_path: str, new_path: str) -> None:
         try:
             self.ftp_service.rename(old_path, new_path)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._ui_queue.put(UIEvent("error", {"error": str(exc), "where": "rename"}))
             return
         self._refresh_remote_blocking()
@@ -349,7 +352,7 @@ class AppController:
                     self.ftp_service.rmdir(entry.path)
                 else:
                     self.ftp_service.delete_file(entry.path)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self._ui_queue.put(UIEvent("error", {"error": str(exc), "where": "delete"}))
         self._refresh_remote_blocking()
 
@@ -383,7 +386,7 @@ class AppController:
     def _remote_mkdir_blocking(self, path: str) -> None:
         try:
             self.ftp_service.mkdir(path)
-        except Exception as exc:
+        except Exception as exc:  # pylint: disable=broad-exception-caught
             self._ui_queue.put(UIEvent("error", {"error": str(exc), "where": "mkdir"}))
             return
         self._refresh_remote_blocking()
@@ -446,8 +449,6 @@ class AppController:
 
     def action_about(self) -> None:
         """Display an About dialog."""
-        from ftplib_gui.__about__ import __version__
-
         messagebox.showinfo(
             "About ftplib-gui",
             f"ftplib-gui {__version__}\n\nA stdlib-only FTP/FTPS GUI client.",
@@ -496,10 +497,8 @@ class AppController:
             self.window.remote_browser.show_entries(cwd, entries)
             profile = event.payload.get("profile")
             if profile is not None and profile.default_local_dir:
-                try:
+                with contextlib.suppress(OSError):
                     self.window.local_browser.navigate_to(pathlib.Path(profile.default_local_dir).expanduser())
-                except OSError:
-                    pass
             self._refresh_status()
         elif event.type == "connection_failed":
             self._connected = False
@@ -551,7 +550,7 @@ class AppController:
                 break
             try:
                 job()
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-exception-caught
                 self._log.exception("Background FTP job failed: %s", exc)
                 self._ui_queue.put(UIEvent("error", {"error": str(exc), "where": "ftp_job"}))
 
@@ -584,7 +583,7 @@ class AppController:
 # ----------------------------------------------------------------------
 # entry point
 # ----------------------------------------------------------------------
-def main(args: Optional[argparse.Namespace] = None) -> None:
+def main(args: argparse.Namespace | None = None) -> None:
     """Launch the GUI."""
     debug = bool(args and getattr(args, "debug", False))
     configure_logging(debug=debug)
@@ -593,10 +592,8 @@ def main(args: Optional[argparse.Namespace] = None) -> None:
         controller = AppController(args=args)
     except ImportError as exc:  # tkinter missing
         # Without tkinter we have no GUI to fall back to; print to stderr.
-        import sys
-
         print(
-            "This Python installation does not include tkinter. " "Please install a Python build with Tk support.",
+            "This Python installation does not include tkinter. Please install a Python build with Tk support.",
             file=sys.stderr,
         )
         raise SystemExit(1) from exc

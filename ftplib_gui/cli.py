@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import argparse
-from typing import Optional
 
 from ftplib_gui.__about__ import __version__
+from ftplib_gui.app import main as app_main
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -48,12 +48,10 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Optional[list[str]] = None) -> None:
+def main(argv: list[str] | None = None) -> None:
     """Run the ftplib_gui CLI and launch the GUI."""
     parser = build_parser()
     args = parser.parse_args(argv)
-
-    from ftplib_gui.app import main as app_main
 
     app_main(args)
 

@@ -7,7 +7,7 @@ import threading
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -23,8 +23,8 @@ class ConnectionProfile:
     anonymous: bool = False
     passive: bool = True
     verify_tls: bool = True
-    default_local_dir: Optional[str] = None
-    default_remote_dir: Optional[str] = None
+    default_local_dir: str | None = None
+    default_remote_dir: str | None = None
     save_password: bool = False
 
     def to_dict(self) -> dict[str, Any]:
@@ -68,9 +68,9 @@ class RemoteEntry:
     name: str
     path: str
     is_dir: bool
-    size: Optional[int] = None
-    modified: Optional[datetime] = None
-    permissions: Optional[str] = None
+    size: int | None = None
+    modified: datetime | None = None
+    permissions: str | None = None
 
 
 @dataclass
@@ -80,8 +80,8 @@ class LocalEntry:
     name: str
     path: pathlib.Path
     is_dir: bool
-    size: Optional[int] = None
-    modified: Optional[datetime] = None
+    size: int | None = None
+    modified: datetime | None = None
 
 
 @dataclass
@@ -92,12 +92,12 @@ class TransferJob:
     source: str
     destination: str
     id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    size: Optional[int] = None
+    size: int | None = None
     bytes_done: int = 0
     status: str = "queued"  # queued, running, completed, failed, cancelled
-    error: Optional[str] = None
-    started_at: Optional[float] = None
-    finished_at: Optional[float] = None
+    error: str | None = None
+    started_at: float | None = None
+    finished_at: float | None = None
     cancel_event: threading.Event = field(default_factory=threading.Event)
 
 

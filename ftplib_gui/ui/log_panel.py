@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class LogPanel(ttk.Frame):
+class LogPanel(ttk.Frame):  # pylint: disable=too-many-ancestors
     """A scrollable, read-only :class:`tkinter.Text` that holds log records."""
 
     MAX_LINES = 5000
@@ -32,7 +32,7 @@ class LogPanel(ttk.Frame):
         self.text.configure(state="normal")
         self.text.insert("end", message + "\n")
         # Trim if too long
-        line_count = int(self.text.index("end-1c").split(".")[0])
+        line_count = int(self.text.index("end-1c").split(".", maxsplit=1)[0])
         if line_count > self.MAX_LINES:
             self.text.delete("1.0", f"{line_count - self.MAX_LINES}.0")
         self.text.see("end")
