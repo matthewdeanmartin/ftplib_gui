@@ -39,39 +39,39 @@ platform
 subprocess
 ```
 
----
+______________________________________________________________________
 
 ## 2. Goals
 
 `ftplib-gui` should provide:
 
 1. A usable graphical FTP client for basic file transfer workflows.
-2. Support for plain FTP and explicit FTPS using `ftplib.FTP_TLS`.
-3. A dual-pane local/remote file browser.
-4. Upload, download, delete, rename, mkdir, refresh, and navigation actions.
-5. Transfer progress reporting.
-6. A queue-based transfer system that keeps the UI responsive.
-7. A connection manager for saving host profiles.
-8. A log panel for FTP commands, transfer events, and errors.
-9. A clean architecture suitable for future extension.
+1. Support for plain FTP and explicit FTPS using `ftplib.FTP_TLS`.
+1. A dual-pane local/remote file browser.
+1. Upload, download, delete, rename, mkdir, refresh, and navigation actions.
+1. Transfer progress reporting.
+1. A queue-based transfer system that keeps the UI responsive.
+1. A connection manager for saving host profiles.
+1. A log panel for FTP commands, transfer events, and errors.
+1. A clean architecture suitable for future extension.
 
----
+______________________________________________________________________
 
 ## 3. Non-goals
 
 The first version will not support:
 
 1. SFTP, because SFTP is SSH-based and not supported by the Python standard library.
-2. Recursive directory synchronization.
-3. Parallel transfer workers.
-4. Drag-and-drop, since cross-platform DnD is not well supported by stdlib `tkinter`.
-5. Site-to-site FTP transfer.
-6. Remote text editing.
-7. ZIP previewing or archive browsing.
-8. Proxy support.
-9. Advanced certificate trust management beyond stdlib `ssl`.
+1. Recursive directory synchronization.
+1. Parallel transfer workers.
+1. Drag-and-drop, since cross-platform DnD is not well supported by stdlib `tkinter`.
+1. Site-to-site FTP transfer.
+1. Remote text editing.
+1. ZIP previewing or archive browsing.
+1. Proxy support.
+1. Advanced certificate trust management beyond stdlib `ssl`.
 
----
+______________________________________________________________________
 
 ## 4. Supported Protocols
 
@@ -85,16 +85,16 @@ ftplib.FTP
 
 Required features:
 
-* Connect to host and port.
-* Login with username and password.
-* Anonymous login option.
-* Passive mode toggle.
-* Directory listing.
-* Upload and download files.
-* Delete files.
-* Create and remove directories.
-* Rename files or directories.
-* Change remote working directory.
+- Connect to host and port.
+- Login with username and password.
+- Anonymous login option.
+- Passive mode toggle.
+- Directory listing.
+- Upload and download files.
+- Delete files.
+- Create and remove directories.
+- Rename files or directories.
+- Change remote working directory.
 
 ### 4.2 FTPS
 
@@ -107,21 +107,21 @@ ssl
 
 Supported mode:
 
-* Explicit FTPS using `AUTH TLS`.
+- Explicit FTPS using `AUTH TLS`.
 
 Required features:
 
-* Secure control connection.
-* Secure data connection using `prot_p()`.
-* Optional insecure certificate mode for legacy servers.
-* Optional strict certificate validation using `ssl.create_default_context()`.
+- Secure control connection.
+- Secure data connection using `prot_p()`.
+- Optional insecure certificate mode for legacy servers.
+- Optional strict certificate validation using `ssl.create_default_context()`.
 
 Not supported:
 
-* Implicit FTPS on port 990 in v1 unless explicitly added.
-* Client certificate authentication.
+- Implicit FTPS on port 990 in v1 unless explicitly added.
+- Client certificate authentication.
 
----
+______________________________________________________________________
 
 ## 5. Application Layout
 
@@ -144,7 +144,7 @@ The main window contains five primary regions.
 +-------------------------------------------------------------+
 ```
 
----
+______________________________________________________________________
 
 ## 6. Main UI Components
 
@@ -154,70 +154,80 @@ Menus:
 
 #### File
 
-* New Connection
-* Open Connection Profile
-* Save Current Profile
-* Disconnect
-* Exit
+- New Connection
+- Open Connection Profile
+- Save Current Profile
+- Disconnect
+- Exit
 
 #### Edit
 
-* Rename
-* Delete
-* New Folder
-* Refresh
+- Rename
+- Delete
+- New Folder
+- Refresh
 
 #### Transfer
 
-* Upload Selected
-* Download Selected
-* Cancel Selected Transfer
-* Clear Completed Transfers
+- Upload Selected
+- Download Selected
+- Cancel Selected Transfer
+- Clear Completed Transfers
 
 #### View
 
-* Show Log Panel
-* Show Hidden Files
-* Refresh Local
-* Refresh Remote
+- Show Log Panel
+- Show Hidden Files
+- Refresh Local
+- Refresh Remote
 
 #### Help
 
-* About
-* Python `ftplib` Documentation
+- About
+- Python `ftplib` Documentation
 
----
+______________________________________________________________________
 
 ### 6.2 Connection Toolbar
 
 Fields:
 
-* Host
-* Port
-* Username
-* Password
-* Protocol selector:
+- Host
 
-  * FTP
-  * FTPS Explicit
-* Passive mode checkbox
-* Anonymous checkbox
-* Connect button
-* Disconnect button
+- Port
+
+- Username
+
+- Password
+
+- Protocol selector:
+
+  - FTP
+  - FTPS Explicit
+
+- Passive mode checkbox
+
+- Anonymous checkbox
+
+- Connect button
+
+- Disconnect button
 
 Behavior:
 
-* Password field must mask input.
-* Anonymous mode disables username/password fields and uses:
+- Password field must mask input.
 
-  * username: `anonymous`
-  * password: `anonymous@`
-* Port defaults:
+- Anonymous mode disables username/password fields and uses:
 
-  * FTP: `21`
-  * FTPS Explicit: `21`
+  - username: `anonymous`
+  - password: `anonymous@`
 
----
+- Port defaults:
+
+  - FTP: `21`
+  - FTPS Explicit: `21`
+
+______________________________________________________________________
 
 ### 6.3 Local File Browser
 
@@ -225,21 +235,21 @@ Implemented with `ttk.Treeview`.
 
 Columns:
 
-* Name
-* Size
-* Modified
-* Type
+- Name
+- Size
+- Modified
+- Type
 
 Required behavior:
 
-* Shows the current local directory.
-* Supports navigating into folders by double-click.
-* Supports going up one directory.
-* Supports selecting one or more files.
-* Supports refresh.
-* Supports creating local folders.
-* Supports deleting local files/folders after confirmation.
-* Supports rename.
+- Shows the current local directory.
+- Supports navigating into folders by double-click.
+- Supports going up one directory.
+- Supports selecting one or more files.
+- Supports refresh.
+- Supports creating local folders.
+- Supports deleting local files/folders after confirmation.
+- Supports rename.
 
 Local path field:
 
@@ -249,12 +259,12 @@ Local: /Users/example/Downloads
 
 Local navigation buttons:
 
-* Up
-* Home
-* Refresh
-* Choose Folder
+- Up
+- Home
+- Refresh
+- Choose Folder
 
----
+______________________________________________________________________
 
 ### 6.4 Remote File Browser
 
@@ -262,22 +272,22 @@ Implemented with `ttk.Treeview`.
 
 Columns:
 
-* Name
-* Size
-* Modified
-* Type
-* Permissions, if available
+- Name
+- Size
+- Modified
+- Type
+- Permissions, if available
 
 Required behavior:
 
-* Shows the current remote directory.
-* Supports navigating into folders by double-click.
-* Supports going up one directory.
-* Supports selecting one or more files.
-* Supports refresh.
-* Supports creating remote folders.
-* Supports deleting remote files/folders after confirmation.
-* Supports rename.
+- Shows the current remote directory.
+- Supports navigating into folders by double-click.
+- Supports going up one directory.
+- Supports selecting one or more files.
+- Supports refresh.
+- Supports creating remote folders.
+- Supports deleting remote files/folders after confirmation.
+- Supports rename.
 
 Remote path field:
 
@@ -287,12 +297,12 @@ Remote: /public_html
 
 Remote navigation buttons:
 
-* Up
-* Root
-* Refresh
-* New Folder
+- Up
+- Root
+- Refresh
+- New Folder
 
----
+______________________________________________________________________
 
 ### 6.5 Transfer Queue
 
@@ -300,35 +310,35 @@ Implemented with `ttk.Treeview`.
 
 Columns:
 
-* Direction
-* Source
-* Destination
-* Size
-* Progress
-* Status
-* Speed
-* ETA
+- Direction
+- Source
+- Destination
+- Size
+- Progress
+- Status
+- Speed
+- ETA
 
 Statuses:
 
-* Queued
-* Running
-* Completed
-* Failed
-* Cancelled
+- Queued
+- Running
+- Completed
+- Failed
+- Cancelled
 
 Transfer directions:
 
-* Upload
-* Download
+- Upload
+- Download
 
 Actions:
 
-* Cancel selected transfer
-* Retry failed transfer
-* Clear completed transfers
+- Cancel selected transfer
+- Retry failed transfer
+- Clear completed transfers
 
----
+______________________________________________________________________
 
 ### 6.6 Log Panel
 
@@ -336,12 +346,12 @@ Implemented with `tkinter.Text`.
 
 The log panel should display:
 
-* Connection events.
-* Login success/failure.
-* Directory changes.
-* Transfer start/completion.
-* Transfer errors.
-* Server messages where appropriate.
+- Connection events.
+- Login success/failure.
+- Directory changes.
+- Transfer start/completion.
+- Transfer errors.
+- Server messages where appropriate.
 
 Example:
 
@@ -355,17 +365,17 @@ Example:
 
 The log panel should not display raw passwords.
 
----
+______________________________________________________________________
 
 ### 6.7 Status Bar
 
 Displays:
 
-* Connection state.
-* Current remote directory.
-* Number of selected local items.
-* Number of selected remote items.
-* Current transfer status.
+- Connection state.
+- Current remote directory.
+- Number of selected local items.
+- Number of selected remote items.
+- Current transfer status.
 
 Example:
 
@@ -373,7 +383,7 @@ Example:
 Connected to ftp.example.com | Remote: /pub | 2 remote items selected | 1 transfer running
 ```
 
----
+______________________________________________________________________
 
 ## 7. Architecture
 
@@ -396,7 +406,7 @@ Application Controller
   +--> Logger
 ```
 
----
+______________________________________________________________________
 
 ## 8. Core Classes
 
@@ -442,14 +452,14 @@ class FTPClientService:
 
 Implementation notes:
 
-* Use `FTP_TLS` when protocol is FTPS.
-* Call `prot_p()` after login for FTPS data-channel protection.
-* Use passive mode according to the profile setting.
-* Use `retrbinary()` for downloads.
-* Use `storbinary()` for uploads.
-* Avoid calling FTP methods directly from the Tkinter main thread.
+- Use `FTP_TLS` when protocol is FTPS.
+- Call `prot_p()` after login for FTPS data-channel protection.
+- Use passive mode according to the profile setting.
+- Use `retrbinary()` for downloads.
+- Use `storbinary()` for uploads.
+- Avoid calling FTP methods directly from the Tkinter main thread.
 
----
+______________________________________________________________________
 
 ### 8.2 `LocalFileService`
 
@@ -475,7 +485,7 @@ stat
 shutil
 ```
 
----
+______________________________________________________________________
 
 ### 8.3 `TransferManager`
 
@@ -495,14 +505,14 @@ class TransferManager:
 
 Requirements:
 
-* Runs transfers on a background worker thread.
-* Uses `queue.Queue` to receive transfer jobs.
-* Uses `queue.Queue` to send progress events back to the GUI.
-* Supports cancellation via `threading.Event`.
-* Processes one transfer at a time in v1.
-* Does not mutate Tkinter widgets from worker threads.
+- Runs transfers on a background worker thread.
+- Uses `queue.Queue` to receive transfer jobs.
+- Uses `queue.Queue` to send progress events back to the GUI.
+- Supports cancellation via `threading.Event`.
+- Processes one transfer at a time in v1.
+- Does not mutate Tkinter widgets from worker threads.
 
----
+______________________________________________________________________
 
 ### 8.4 `ProfileStore`
 
@@ -536,11 +546,11 @@ Suggested profile shape:
 
 Password handling:
 
-* v1 should not save passwords by default.
-* If “remember password” is added, the UI must warn that stdlib-only Python cannot provide a secure cross-platform keychain.
-* Stored passwords should be avoided unless the user explicitly opts in.
+- v1 should not save passwords by default.
+- If “remember password” is added, the UI must warn that stdlib-only Python cannot provide a secure cross-platform keychain.
+- Stored passwords should be avoided unless the user explicitly opts in.
 
----
+______________________________________________________________________
 
 ## 9. Data Models
 
@@ -562,7 +572,7 @@ class ConnectionProfile:
     default_remote_dir: str | None = None
 ```
 
----
+______________________________________________________________________
 
 ### 9.2 `RemoteEntry`
 
@@ -577,7 +587,7 @@ class RemoteEntry:
     permissions: str | None = None
 ```
 
----
+______________________________________________________________________
 
 ### 9.3 `LocalEntry`
 
@@ -591,7 +601,7 @@ class LocalEntry:
     modified: datetime | None = None
 ```
 
----
+______________________________________________________________________
 
 ### 9.4 `TransferJob`
 
@@ -609,7 +619,7 @@ class TransferJob:
     cancel_event: threading.Event = field(default_factory=threading.Event)
 ```
 
----
+______________________________________________________________________
 
 ## 10. Remote Directory Listing
 
@@ -618,8 +628,8 @@ class TransferJob:
 Preferred order:
 
 1. Try `mlsd()` first.
-2. Fall back to `dir()`.
-3. Fall back to `nlst()`.
+1. Fall back to `dir()`.
+1. Fall back to `nlst()`.
 
 ### 10.1 `mlsd()`
 
@@ -636,17 +646,17 @@ for name, facts in ftp.mlsd():
 
 Map FTP `type` values:
 
-| FTP type | Meaning           |
+| FTP type | Meaning |
 | -------- | ----------------- |
-| `file`   | File              |
-| `dir`    | Directory         |
-| `cdir`   | Current directory |
-| `pdir`   | Parent directory  |
+| `file` | File |
+| `dir` | Directory |
+| `cdir` | Current directory |
+| `pdir` | Parent directory |
 
 Skip:
 
-* `cdir`
-* `pdir`
+- `cdir`
+- `pdir`
 
 ### 10.2 `dir()` Fallback
 
@@ -660,18 +670,18 @@ Example line:
 
 Known limitation:
 
-* FTP `LIST` format is not standardized.
-* Parsing may fail on non-Unix servers.
-* Unknown entries should still be displayed with best-effort metadata.
+- FTP `LIST` format is not standardized.
+- Parsing may fail on non-Unix servers.
+- Unknown entries should still be displayed with best-effort metadata.
 
 ### 10.3 `nlst()` Fallback
 
 If only names are available:
 
-* Display names.
-* Unknown size.
-* Unknown modification date.
-* Unknown type unless detected by attempting `cwd`.
+- Display names.
+- Unknown size.
+- Unknown modification date.
+- Unknown type unless detected by attempting `cwd`.
 
 Directory detection fallback:
 
@@ -687,7 +697,7 @@ except ftplib.error_perm:
 
 This should be used sparingly because it is slow.
 
----
+______________________________________________________________________
 
 ## 11. Transfer Behavior
 
@@ -702,17 +712,17 @@ ftp.retrbinary(f"RETR {remote_path}", callback, blocksize=8192)
 The callback should:
 
 1. Write the block to the local file.
-2. Increment bytes transferred.
-3. Send a progress event to the GUI event queue.
-4. Check whether the cancel event is set.
+1. Increment bytes transferred.
+1. Send a progress event to the GUI event queue.
+1. Check whether the cancel event is set.
 
 Cancellation limitation:
 
-* `ftplib.retrbinary()` does not provide a clean built-in cancellation mechanism.
-* The callback may raise a custom exception such as `TransferCancelled`.
-* The service should then close or reset the FTP connection if necessary.
+- `ftplib.retrbinary()` does not provide a clean built-in cancellation mechanism.
+- The callback may raise a custom exception such as `TransferCancelled`.
+- The service should then close or reset the FTP connection if necessary.
 
----
+______________________________________________________________________
 
 ### 11.2 Uploads
 
@@ -725,10 +735,10 @@ ftp.storbinary(f"STOR {remote_path}", fileobj, blocksize=8192, callback=callback
 The callback should:
 
 1. Increment bytes transferred.
-2. Send a progress event.
-3. Check cancellation state.
+1. Send a progress event.
+1. Check cancellation state.
 
----
+______________________________________________________________________
 
 ### 11.3 Progress
 
@@ -740,11 +750,11 @@ percent = int(bytes_done / total_bytes * 100)
 
 If total size is unknown:
 
-* Display bytes transferred.
-* Show progress as indeterminate.
-* Do not display ETA.
+- Display bytes transferred.
+- Show progress as indeterminate.
+- Do not display ETA.
 
----
+______________________________________________________________________
 
 ### 11.4 Transfer Speed
 
@@ -756,11 +766,11 @@ speed = bytes_done / elapsed_seconds
 
 Display:
 
-* B/s
-* KB/s
-* MB/s
+- B/s
+- KB/s
+- MB/s
 
----
+______________________________________________________________________
 
 ### 11.5 ETA
 
@@ -771,7 +781,7 @@ remaining_bytes = total_bytes - bytes_done
 eta_seconds = remaining_bytes / bytes_per_second
 ```
 
----
+______________________________________________________________________
 
 ## 12. Threading Model
 
@@ -780,9 +790,9 @@ Tkinter must run on the main thread.
 Rules:
 
 1. All widget creation and updates happen on the Tkinter thread.
-2. FTP network operations happen on worker threads.
-3. Worker threads send messages to the GUI through `queue.Queue`.
-4. The GUI polls the queue using `root.after()`.
+1. FTP network operations happen on worker threads.
+1. Worker threads send messages to the GUI through `queue.Queue`.
+1. The GUI polls the queue using `root.after()`.
 
 Example event loop:
 
@@ -809,19 +819,19 @@ class UIEvent:
 
 Suggested event names:
 
-* `connected`
-* `disconnected`
-* `remote_list_loaded`
-* `local_list_loaded`
-* `transfer_started`
-* `transfer_progress`
-* `transfer_completed`
-* `transfer_failed`
-* `transfer_cancelled`
-* `log`
-* `error`
+- `connected`
+- `disconnected`
+- `remote_list_loaded`
+- `local_list_loaded`
+- `transfer_started`
+- `transfer_progress`
+- `transfer_completed`
+- `transfer_failed`
+- `transfer_cancelled`
+- `log`
+- `error`
 
----
+______________________________________________________________________
 
 ## 13. Error Handling
 
@@ -838,11 +848,11 @@ json.JSONDecodeError
 
 Error display rules:
 
-* Show user-friendly messages in dialogs for major failures.
-* Log full error details in the log panel.
-* Never crash the GUI due to a failed FTP command.
-* Disable remote actions when disconnected.
-* On connection loss, mark remote state as disconnected and fail active transfers.
+- Show user-friendly messages in dialogs for major failures.
+- Log full error details in the log panel.
+- Never crash the GUI due to a failed FTP command.
+- Disable remote actions when disconnected.
+- On connection loss, mark remote state as disconnected and fail active transfers.
 
 Example user message:
 
@@ -858,22 +868,22 @@ Example log message:
 [2026-05-01 14:18:04] ERROR: Connection failed: TimeoutError('timed out')
 ```
 
----
+______________________________________________________________________
 
 ## 14. Security Requirements
 
 ### 14.1 Passwords
 
-* Passwords must be masked in the UI.
-* Passwords must not be written to logs.
-* Passwords must not be saved by default.
-* Clipboard copy of passwords is not provided.
+- Passwords must be masked in the UI.
+- Passwords must not be written to logs.
+- Passwords must not be saved by default.
+- Clipboard copy of passwords is not provided.
 
 ### 14.2 FTPS
 
-* FTPS should verify certificates by default.
-* Users may disable certificate verification for legacy servers.
-* If verification is disabled, show a warning:
+- FTPS should verify certificates by default.
+- Users may disable certificate verification for legacy servers.
+- If verification is disabled, show a warning:
 
 ```text
 TLS certificate verification is disabled. Your connection may be vulnerable to interception.
@@ -891,24 +901,24 @@ os.chmod(profile_path, 0o600)
 
 On Windows:
 
-* Use normal user profile directory.
-* Document that stdlib-only Python does not provide full credential vault integration.
+- Use normal user profile directory.
+- Document that stdlib-only Python does not provide full credential vault integration.
 
----
+______________________________________________________________________
 
 ## 15. Platform Support
 
 Target platforms:
 
-* Windows 10+
-* macOS 12+
-* Linux desktop environments with Tk installed
+- Windows 10+
+- macOS 12+
+- Linux desktop environments with Tk installed
 
 Python versions:
 
-* Python 3.11+
-* Python 3.12+
-* Python 3.13+
+- Python 3.11+
+- Python 3.12+
+- Python 3.13+
 
 The application should degrade gracefully if `tkinter` is unavailable.
 
@@ -918,7 +928,7 @@ Startup error:
 This Python installation does not include tkinter. Please install a Python build with Tk support.
 ```
 
----
+______________________________________________________________________
 
 ## 16. CLI Behavior
 
@@ -945,7 +955,7 @@ Arguments:
 
 Passwords should not be accepted through CLI arguments in v1, because command-line arguments may be visible to other local processes.
 
----
+______________________________________________________________________
 
 ## 17. Project Layout
 
@@ -971,130 +981,136 @@ ftplib_gui/
     log_panel.py
 ```
 
----
+______________________________________________________________________
 
 ## 18. Main User Flows
 
 ### 18.1 Connect to FTP Server
 
 1. User enters host, port, username, and password.
-2. User selects FTP or FTPS.
-3. User clicks Connect.
-4. UI disables connection fields.
-5. Worker thread attempts connection.
-6. On success:
 
-   * Status bar shows connected state.
-   * Remote file browser loads `/` or configured default directory.
-7. On failure:
+1. User selects FTP or FTPS.
 
-   * UI re-enables connection fields.
-   * Error is shown.
-   * Failure is logged.
+1. User clicks Connect.
 
----
+1. UI disables connection fields.
+
+1. Worker thread attempts connection.
+
+1. On success:
+
+   - Status bar shows connected state.
+   - Remote file browser loads `/` or configured default directory.
+
+1. On failure:
+
+   - UI re-enables connection fields.
+   - Error is shown.
+   - Failure is logged.
+
+______________________________________________________________________
 
 ### 18.2 Download File
 
 1. User selects one or more remote files.
-2. User clicks Download.
-3. App asks for destination folder if needed.
-4. Transfer jobs are added to queue.
-5. Worker downloads each file.
-6. Queue updates progress.
-7. Local browser refreshes on completion.
+1. User clicks Download.
+1. App asks for destination folder if needed.
+1. Transfer jobs are added to queue.
+1. Worker downloads each file.
+1. Queue updates progress.
+1. Local browser refreshes on completion.
 
----
+______________________________________________________________________
 
 ### 18.3 Upload File
 
 1. User selects one or more local files.
-2. User clicks Upload.
-3. App uploads into current remote directory.
-4. Transfer jobs are added to queue.
-5. Worker uploads each file.
-6. Queue updates progress.
-7. Remote browser refreshes on completion.
+1. User clicks Upload.
+1. App uploads into current remote directory.
+1. Transfer jobs are added to queue.
+1. Worker uploads each file.
+1. Queue updates progress.
+1. Remote browser refreshes on completion.
 
----
+______________________________________________________________________
 
 ### 18.4 Create Remote Folder
 
 1. User clicks New Folder in remote pane.
-2. Dialog asks for folder name.
-3. App calls `FTP.mkd()`.
-4. Remote browser refreshes.
+1. Dialog asks for folder name.
+1. App calls `FTP.mkd()`.
+1. Remote browser refreshes.
 
----
+______________________________________________________________________
 
 ### 18.5 Rename Remote File
 
 1. User selects remote item.
-2. User clicks Rename or presses F2.
-3. Dialog asks for new name.
-4. App calls `FTP.rename(old, new)`.
-5. Remote browser refreshes.
+1. User clicks Rename or presses F2.
+1. Dialog asks for new name.
+1. App calls `FTP.rename(old, new)`.
+1. Remote browser refreshes.
 
----
+______________________________________________________________________
 
 ### 18.6 Delete Remote File
 
 1. User selects remote item.
-2. User clicks Delete.
-3. Confirmation dialog appears.
-4. For files, app calls `FTP.delete()`.
-5. For directories, app calls `FTP.rmd()`.
-6. Remote browser refreshes.
+1. User clicks Delete.
+1. Confirmation dialog appears.
+1. For files, app calls `FTP.delete()`.
+1. For directories, app calls `FTP.rmd()`.
+1. Remote browser refreshes.
 
 Recursive remote deletion is not supported in v1.
 
----
+______________________________________________________________________
 
 ## 19. Keyboard Shortcuts
 
-| Shortcut  | Action                         |
+| Shortcut | Action |
 | --------- | ------------------------------ |
-| F5        | Refresh active pane            |
-| F2        | Rename selected item           |
-| Delete    | Delete selected item           |
-| Enter     | Open selected directory        |
-| Backspace | Go up one directory            |
-| Ctrl+U    | Upload selected local items    |
-| Ctrl+D    | Download selected remote items |
-| Ctrl+L    | Focus local path               |
-| Ctrl+R    | Focus remote path              |
-| Ctrl+Q    | Quit                           |
+| F5 | Refresh active pane |
+| F2 | Rename selected item |
+| Delete | Delete selected item |
+| Enter | Open selected directory |
+| Backspace | Go up one directory |
+| Ctrl+U | Upload selected local items |
+| Ctrl+D | Download selected remote items |
+| Ctrl+L | Focus local path |
+| Ctrl+R | Focus remote path |
+| Ctrl+Q | Quit |
 
----
+______________________________________________________________________
 
 ## 20. UI State Rules
 
 When disconnected:
 
-* Disable remote browser actions.
-* Disable upload/download.
-* Enable connection fields.
-* Show remote pane as empty or “Not connected.”
+- Disable remote browser actions.
+- Disable upload/download.
+- Enable connection fields.
+- Show remote pane as empty or “Not connected.”
 
 When connecting:
 
-* Disable Connect button.
-* Disable connection fields.
-* Show status: `Connecting...`
+- Disable Connect button.
+- Disable connection fields.
+- Show status: `Connecting...`
 
 When connected:
 
-* Enable Disconnect.
-* Enable remote actions.
-* Enable upload/download where selections allow.
+- Enable Disconnect.
+- Enable remote actions.
+- Enable upload/download where selections allow.
 
 During transfer:
 
-* Keep browsers usable.
-* Disable Disconnect or confirm before disconnecting.
-* Allow cancellation of queued/running transfers.
+- Keep browsers usable.
+- Disable Disconnect or confirm before disconnecting.
+- Allow cancellation of queued/running transfers.
 
----
+______________________________________________________________________
 
 ## 21. Logging
 
@@ -1103,7 +1119,7 @@ Use stdlib `logging`.
 Log destinations:
 
 1. GUI log panel.
-2. Optional rotating file log.
+1. Optional rotating file log.
 
 Suggested log path:
 
@@ -1131,11 +1147,11 @@ python -m ftplib_gui --debug
 
 Must not log:
 
-* Passwords.
-* Full profile JSON if it contains secrets.
-* TLS private material.
+- Passwords.
+- Full profile JSON if it contains secrets.
+- TLS private material.
 
----
+______________________________________________________________________
 
 ## 22. Testing Strategy
 
@@ -1152,13 +1168,13 @@ pathlib
 
 Test:
 
-* Profile loading/saving.
-* Local file listing.
-* Transfer queue state transitions.
-* Remote listing parser.
-* Human-readable size formatting.
-* Speed and ETA calculation.
-* Error formatting.
+- Profile loading/saving.
+- Local file listing.
+- Transfer queue state transitions.
+- Remote listing parser.
+- Human-readable size formatting.
+- Speed and ETA calculation.
+- Error formatting.
 
 ### 22.2 FTP Client Tests
 
@@ -1166,27 +1182,27 @@ Use mocks for `ftplib.FTP` and `ftplib.FTP_TLS`.
 
 Test:
 
-* FTP connect.
-* FTPS connect.
-* Passive mode setting.
-* Login behavior.
-* Upload calls `storbinary`.
-* Download calls `retrbinary`.
-* Delete calls `delete`.
-* Rename calls `rename`.
+- FTP connect.
+- FTPS connect.
+- Passive mode setting.
+- Login behavior.
+- Upload calls `storbinary`.
+- Download calls `retrbinary`.
+- Delete calls `delete`.
+- Rename calls `rename`.
 
 ### 22.3 GUI Tests
 
 Minimal GUI tests should verify:
 
-* Main window initializes.
-* Widgets are created.
-* Buttons enable/disable correctly.
-* Queue events update model state.
+- Main window initializes.
+- Widgets are created.
+- Buttons enable/disable correctly.
+- Queue events update model state.
 
 Avoid brittle pixel-level UI tests.
 
----
+______________________________________________________________________
 
 ## 23. Packaging
 
@@ -1209,57 +1225,57 @@ if __name__ == "__main__":
     main()
 ```
 
----
+______________________________________________________________________
 
 ## 24. Limitations
 
 Because this project uses only the Python standard library:
 
 1. No SFTP support.
-2. No native secure credential storage.
-3. No robust cross-platform drag-and-drop.
-4. No advanced theme system beyond `ttk`.
-5. FTP directory listings may be inconsistent across servers.
-6. Transfer cancellation may require reconnecting.
-7. Recursive remote operations are limited.
+1. No native secure credential storage.
+1. No robust cross-platform drag-and-drop.
+1. No advanced theme system beyond `ttk`.
+1. FTP directory listings may be inconsistent across servers.
+1. Transfer cancellation may require reconnecting.
+1. Recursive remote operations are limited.
 
----
+______________________________________________________________________
 
 ## 25. MVP Acceptance Criteria
 
 The MVP is complete when:
 
 1. User can open the app with `python -m ftplib_gui`.
-2. User can connect to a plain FTP server.
-3. User can connect to an explicit FTPS server.
-4. User can browse local files.
-5. User can browse remote files.
-6. User can upload one file.
-7. User can download one file.
-8. User can create a remote folder.
-9. User can delete a remote file.
-10. User can rename a remote file.
-11. Transfer progress appears in the queue.
-12. The UI remains responsive during transfers.
-13. Errors appear in the UI instead of crashing the app.
-14. Passwords are not logged.
-15. No third-party imports are used.
+1. User can connect to a plain FTP server.
+1. User can connect to an explicit FTPS server.
+1. User can browse local files.
+1. User can browse remote files.
+1. User can upload one file.
+1. User can download one file.
+1. User can create a remote folder.
+1. User can delete a remote file.
+1. User can rename a remote file.
+1. Transfer progress appears in the queue.
+1. The UI remains responsive during transfers.
+1. Errors appear in the UI instead of crashing the app.
+1. Passwords are not logged.
+1. No third-party imports are used.
 
----
+______________________________________________________________________
 
 ## 26. Future Enhancements
 
 Possible future versions:
 
 1. Recursive upload/download.
-2. Directory comparison.
-3. Sync mode.
-4. Bookmarks.
-5. Transfer resume using `REST`, where supported.
-6. Checksums where server supports `XMD5`, `XSHA1`, or similar nonstandard commands.
-7. Implicit FTPS.
-8. Import/export profiles.
-9. Tabbed connections.
-10. Local file search.
-11. Remote file filtering.
-12. Optional platform-specific credential storage, if the stdlib-only rule is relaxed.
+1. Directory comparison.
+1. Sync mode.
+1. Bookmarks.
+1. Transfer resume using `REST`, where supported.
+1. Checksums where server supports `XMD5`, `XSHA1`, or similar nonstandard commands.
+1. Implicit FTPS.
+1. Import/export profiles.
+1. Tabbed connections.
+1. Local file search.
+1. Remote file filtering.
+1. Optional platform-specific credential storage, if the stdlib-only rule is relaxed.

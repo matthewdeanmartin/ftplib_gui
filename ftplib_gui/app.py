@@ -26,6 +26,8 @@ from ftplib_gui.local_files import LocalFileService
 from ftplib_gui.logging_utils import attach_gui_sink, configure_logging, get_logger
 from ftplib_gui.models import ConnectionProfile, LocalEntry, RemoteEntry, UIEvent
 from ftplib_gui.profiles import ProfileStore
+from ftplib_gui.server import EmbeddedFTPServer, ServerConfig, ServerUser
+from ftplib_gui.server import is_available as server_is_available
 from ftplib_gui.transfers import TransferManager
 from ftplib_gui.ui.main_window import MainWindow
 
@@ -52,6 +54,11 @@ class AppController:
         # A single thread keeps things simple and matches the spec ("one transfer at a time").
         self._ftp_jobs: queue.Queue[Callable[[], None] | None] = queue.Queue()
         self._ftp_thread = threading.Thread(target=self._run_ftp_jobs, daemon=True, name="ftplib-gui-ftp")
+
+        self.server_available = server_is_available()
+        self.embedded_server: EmbeddedFTPServer | None = (
+            EmbeddedFTPServer(log_callback=self._on_server_log) if self.server_available else None
+        )
 
         self.window: MainWindow = MainWindow(self)
         self._connected = False
@@ -80,6 +87,9 @@ class AppController:
         self._ftp_jobs.put(None)
         with contextlib.suppress(Exception):
             self.ftp_service.disconnect()
+        if self.embedded_server is not None and self.embedded_server.running:
+            with contextlib.suppress(Exception):
+                self.embedded_server.stop()
 
     # ------------------------------------------------------------------
     # CLI bootstrap
@@ -447,6 +457,55 @@ class AppController:
         removed = self.transfer_manager.clear_completed()
         self.window.transfer_view.remove_jobs(removed)
 
+    # ------------------------------------------------------------------
+    # embedded server
+    # ------------------------------------------------------------------
+    def action_start_server(self, config: ServerConfig) -> None:
+        """Start the embedded FTP server with the given configuration."""
+        if self.embedded_server is None:
+            return
+        try:
+            self.embedded_server.start(config)
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            self._log.exception("Failed to start embedded server: %s", exc)
+            messagebox.showerror("Start Server", f"Could not start server:\n{exc}")
+            return
+        if self.window.server_tab is not None:
+            self.window.server_tab.set_running(True, listening_on=f"{config.host}:{config.port}")
+        self._log.info("Embedded FTP server started on %s:%s", config.host, config.port)
+
+    def action_stop_server(self) -> None:
+        """Stop the embedded FTP server."""
+        if self.embedded_server is None:
+            return
+        try:
+            self.embedded_server.stop()
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            self._log.exception("Failed to stop embedded server: %s", exc)
+        if self.window.server_tab is not None:
+            self.window.server_tab.set_running(False)
+
+    def action_use_server_user_in_client(self, user: ServerUser, host: str, port: int) -> None:
+        """Copy a server user's credentials into the client's connection bar."""
+        profile = ConnectionProfile(
+            name=f"local:{user.username}",
+            host=host,
+            port=port,
+            protocol="ftp",
+            username=user.username,
+            password=user.password,
+            anonymous=False,
+            passive=True,
+            verify_tls=True,
+        )
+        self.window.connection_bar.populate(profile)
+        self.window.show_client_tab()
+        self.window.set_status(f"Connection bar pre-filled for {user.username}@{host}:{port}. Click Connect.")
+
+    def _on_server_log(self, message: str) -> None:
+        """Background-thread callback; defers UI update to the main thread."""
+        self._ui_queue.put(UIEvent("server_log", {"message": message}))
+
     def action_about(self) -> None:
         """Display an About dialog."""
         messagebox.showinfo(
@@ -534,6 +593,9 @@ class AppController:
             elif event.type == "transfer_failed":
                 self._log.error("Transfer failed: %s", event.payload.get("error"))
             self._refresh_status()
+        elif event.type == "server_log":
+            if self.window.server_tab is not None:
+                self.window.server_tab.append_log(event.payload.get("message", ""))
         elif event.type == "error":
             messagebox.showerror("Error", event.payload.get("error", "Unknown error"))
 

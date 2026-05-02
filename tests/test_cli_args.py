@@ -9,6 +9,7 @@ from ftplib_gui.cli import build_parser
 
 def test_default_no_args() -> None:
     args = build_parser().parse_args([])
+    assert args.command is None
     assert args.host is None
     assert args.port is None
     assert args.protocol is None
@@ -38,3 +39,21 @@ def test_local_and_remote_dirs() -> None:
     assert args.local_dir == "/tmp/x"
     assert args.remote_dir == "/pub"
     assert args.profile == "ex"
+
+
+def test_gui_subcommand_accepts_launch_options() -> None:
+    args = build_parser().parse_args(["gui", "--host", "ftp.example.com", "--port", "2121"])
+    assert args.command == "gui"
+    assert args.host == "ftp.example.com"
+    assert args.port == 2121
+
+
+def test_paths_subcommand_defaults_to_all() -> None:
+    args = build_parser().parse_args(["paths"])
+    assert args.command == "paths"
+    assert args.selection == "all"
+
+
+def test_profiles_subcommand_parses() -> None:
+    args = build_parser().parse_args(["profiles"])
+    assert args.command == "profiles"

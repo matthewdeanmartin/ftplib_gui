@@ -1,14 +1,14 @@
 [project]
 name = "ftplib_gui"
 version = "0.1.0"
-description = "A GUI front-end for Python's ftplib"
+description = "Desktop FTP/FTPS client with a Tkinter GUI, saved profiles, and transfer queue"
 readme = "README.md"
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
-keywords = ["ftplib_gui"]
+keywords = ["ftp", "ftps", "gui", "tkinter", "file-transfer"]
 license = "MIT"
 requires-python = ">=3.13"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",

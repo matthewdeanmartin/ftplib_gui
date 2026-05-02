@@ -16,8 +16,23 @@ the latest release to receive security patches.
 
 | Version | Supported |
 |---------|-----------|
-| latest  | Yes       |
-| older   | No        |
+| latest | Yes |
+| older | No |
+
+## Scope
+
+The security scope for this repository includes:
+
+- the published `ftplib_gui` package and its command-line entry points
+- the Tkinter desktop client, including profile storage and log-file handling
+- the optional embedded FTP server support shipped in this repository
+- the GitHub Actions workflows and packaging configuration used to build and publish releases
+
+The following are **out of scope** unless this project introduces the defect directly:
+
+- vulnerabilities in third-party FTP servers or optional dependencies themselves
+- weaknesses inherent to plain FTP transport, which is unencrypted by design
+- local machine compromise outside the directories and credentials managed by this tool
 
 ## Reporting a Vulnerability
 
@@ -29,7 +44,7 @@ You have two private reporting channels:
    [submit a confidential report](https://github.com/matthewdeanmartin/ftplib_gui/security/advisories/new)
    directly on GitHub. This is the preferred channel.
 
-2. **Email** — contact **`matthewdeanmartin@gmail.com`** if you prefer not to use GitHub.
+1. **Email** — contact **`matthewdeanmartin@gmail.com`** if you prefer not to use GitHub.
 
 When reporting, please include as much of the following as possible:
 
@@ -57,7 +72,7 @@ If you discover that a pinned transitive dependency has a known vulnerability yo
 
 1. **Override the dependency** — create a `requirements.txt` with the patched version pinned and install it
    alongside this tool.
-2. **Open an issue or pull request** — a PR that bumps the dependency and keeps all tests green is the fastest
+1. **Open an issue or pull request** — a PR that bumps the dependency and keeps all tests green is the fastest
    path to a fix.
 
 ## Running in Docker (isolation)

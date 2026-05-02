@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from ftplib_gui.ui.connection_bar import ConnectionBar
 from ftplib_gui.ui.file_browser import LocalBrowser, RemoteBrowser
 from ftplib_gui.ui.log_panel import LogPanel
+from ftplib_gui.ui.server_tab import ServerTab
 from ftplib_gui.ui.transfer_queue import TransferQueueView
 
 if TYPE_CHECKING:
@@ -86,18 +87,36 @@ class MainWindow:
         self.root.config(menu=menubar)
 
     def _build_layout(self) -> None:
+        # Status bar (packed first against the bottom so it stays visible
+        # regardless of which tab is selected).
+        self.status_var = tk.StringVar(value="Disconnected")
+        status = ttk.Label(self.root, textvariable=self.status_var, relief="sunken", anchor="w")
+        status.pack(fill="x", side="bottom")
+
+        # Make the notebook tabs unmissable: bigger padding + bold label.
+        style = ttk.Style(self.root)
+        style.configure("Big.TNotebook.Tab", padding=(16, 6), font=("TkDefaultFont", 10, "bold"))
+
+        # Notebook is now top-level; each tab owns its own widgets so the
+        # Server tab gets the full window height.
+        self.notebook = ttk.Notebook(self.root, style="Big.TNotebook")
+        self.notebook.pack(fill="both", expand=True)
+
+        # ---- Client tab --------------------------------------------------
+        client_frame = ttk.Frame(self.notebook)
+        self.notebook.add(client_frame, text="Client (FTP)")
+
         self.connection_bar = ConnectionBar(
-            self.root,
+            client_frame,
             on_connect=self.controller.connect,
             on_disconnect=self.controller.disconnect,
         )
         self.connection_bar.pack(fill="x")
 
-        # Vertical split: top (browsers) | middle (queue) | bottom (log)
-        self.main_paned = ttk.PanedWindow(self.root, orient="vertical")
+        # Vertical split inside the Client tab: browsers | queue | log.
+        self.main_paned = ttk.PanedWindow(client_frame, orient="vertical")
         self.main_paned.pack(fill="both", expand=True)
 
-        # Browsers (horizontal split)
         browsers_frame = ttk.Frame(self.main_paned)
         browsers_paned = ttk.PanedWindow(browsers_frame, orient="horizontal")
         browsers_paned.pack(fill="both", expand=True)
@@ -117,7 +136,6 @@ class MainWindow:
         browsers_paned.add(self.remote_browser, weight=1)
         self.main_paned.add(browsers_frame, weight=4)
 
-        # Transfer queue
         self.transfer_view = TransferQueueView(
             self.main_paned,
             on_cancel=self.controller.cancel_transfer,
@@ -126,14 +144,19 @@ class MainWindow:
         )
         self.main_paned.add(self.transfer_view, weight=2)
 
-        # Log
         self.log_panel = LogPanel(self.main_paned)
         self.main_paned.add(self.log_panel, weight=1)
 
-        # Status bar
-        self.status_var = tk.StringVar(value="Disconnected")
-        status = ttk.Label(self.root, textvariable=self.status_var, relief="sunken", anchor="w")
-        status.pack(fill="x", side="bottom")
+        # ---- Server tab --------------------------------------------------
+        self.server_tab: ServerTab | None = None
+        if self.controller.server_available:
+            self.server_tab = ServerTab(
+                self.notebook,
+                on_start=self.controller.action_start_server,
+                on_stop=self.controller.action_stop_server,
+                on_use_in_client=self.controller.action_use_server_user_in_client,
+            )
+            self.notebook.add(self.server_tab, text="Local Server")
 
     def _bind_shortcuts(self) -> None:
         self.root.bind("<F5>", lambda _e: self.controller.action_refresh())
@@ -165,3 +188,7 @@ class MainWindow:
     def set_status(self, message: str) -> None:
         """Update the status bar text."""
         self.status_var.set(message)
+
+    def show_client_tab(self) -> None:
+        """Bring the Client tab to the front."""
+        self.notebook.select(0)

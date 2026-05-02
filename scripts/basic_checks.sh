@@ -46,8 +46,12 @@ echo "--- global flags ---"
 check "ftplib_gui --help"    run_cli --help
 check "ftplib_gui --version" run_cli --version
 
-# TODO: add subcommand smoke checks here, e.g.:
-# check "ftplib_gui <subcommand> --help"  run_cli <subcommand> --help
+echo "--- subcommands ---"
+check "ftplib_gui gui --help"      run_cli gui --help
+check "ftplib_gui paths --help"    run_cli paths --help
+check "ftplib_gui profiles --help" run_cli profiles --help
+check "ftplib_gui paths"           run_cli paths
+check "ftplib_gui profiles"        run_cli profiles
 
 echo ""
 echo "=== Results: ${PASS} passed, ${FAIL} failed ==="
