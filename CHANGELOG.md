@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-04-26
+## [0.1.0] - 2026-05-02
 
 ### Added
 
@@ -17,3 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Saved connection profiles with optional keyring-backed password storage
 - Optional embedded FTP server support for local testing and demos
 - Basic command-line helpers for launching the GUI and inspecting local app state
+- Cross-platform support
+
+[0.1.0]: https://github.com/matthewdeanmartin/ftplib_gui/releases/tag/v0.1.0
