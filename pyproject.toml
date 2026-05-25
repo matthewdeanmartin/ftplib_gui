@@ -107,6 +107,7 @@ dev = [
 
 [tool.uv]
 default-groups = ["dev"]
+universal = true
 
 [tool.pip-audit]
 ignore-vuln = ["GHSA-w596-4wvx-j9j6"]
