@@ -30,12 +30,20 @@ ftplib_gui profiles
 
 ## Contributing
 
-See [CONTRIBUTING.md](docs/extending/CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/matthewdeanmartin/ftplib_gui/blob/main/docs/extending/CONTRIBUTING.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/matthewdeanmartin/ftplib_gui/blob/main/LICENSE).
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/matthewdeanmartin/ftplib_gui/blob/main/CHANGELOG.md).
+
+## Project Links
+
+- [GitHub](https://github.com/matthewdeanmartin/ftplib_gui)
+- [PyPI](https://pypi.org/project/ftplib-gui/)
+- [Documentation](https://ftplib_gui.readthedocs.io/en/latest/)
+- [Bug Tracker](https://github.com/matthewdeanmartin/ftplib_gui/issues)
+- [Change Log](https://github.com/matthewdeanmartin/ftplib_gui/blob/main/CHANGELOG.md)
