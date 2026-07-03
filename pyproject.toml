@@ -8,7 +8,7 @@ keywords = ["ftp", "ftps", "gui", "tkinter", "file-transfer"]
 license = "MIT"
 requires-python = ">=3.14"
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -18,11 +18,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.14",
 ]
-dependencies = [
-    "do_i_need_to_upgrade>=0.0.1",
-]
+dependencies = []
 
 [project.optional-dependencies]
+all = ["do_i_need_to_upgrade>=0.0.1","keyring>=24.0","pyftpdlib>=2.0","python-ftp-server>=1.3"]
 # Optional OS-keychain integration for "remember my password".
 keyring = ["keyring>=24.0"]
 # Integration test backends — pick one server per test run.
