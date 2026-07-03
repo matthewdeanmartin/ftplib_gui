@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from ftplib_gui.cli import build_parser
+from ftplib_gui import upgrade_integration
 
 
 def test_default_no_args() -> None:
@@ -60,12 +61,22 @@ def test_profiles_subcommand_parses() -> None:
 
 
 def test_upgrade_subcommand_parses() -> None:
-    args = build_parser().parse_args(["upgrade", "--check"])
+    parser = build_parser()
+    if not upgrade_integration.HAS_UPGRADE_SUPPORT:
+        with pytest.raises(SystemExit):
+            parser.parse_args(["upgrade", "--check"])
+        return
+    args = parser.parse_args(["upgrade", "--check"])
     assert args.command == "upgrade"
     assert args._diu_check is True
 
 
 def test_check_updates_subcommand_parses() -> None:
-    args = build_parser().parse_args(["check-updates", "--no-network"])
+    parser = build_parser()
+    if not upgrade_integration.HAS_UPGRADE_SUPPORT:
+        with pytest.raises(SystemExit):
+            parser.parse_args(["check-updates", "--no-network"])
+        return
+    args = parser.parse_args(["check-updates", "--no-network"])
     assert args.command == "check-updates"
     assert args._diu_no_network is True

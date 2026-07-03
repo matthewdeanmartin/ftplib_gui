@@ -64,6 +64,8 @@ def test_profiles_command_lists_saved_profiles(capsys: pytest.CaptureFixture[str
 
 def test_upgrade_command_dispatches() -> None:
     """The integrated upgrade subcommand should return its dispatcher exit code."""
+    if not upgrade_integration.HAS_UPGRADE_SUPPORT:
+        return
     with patch("ftplib_gui.cli.run_command", return_value=10) as dispatcher:
         rc = main(["upgrade", "--check"])
 

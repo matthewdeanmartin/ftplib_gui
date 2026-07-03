@@ -40,7 +40,21 @@ def test_listdir_os_error(tmp_path):
     service = LocalFileService()
     (tmp_path / "broken").mkdir()
 
-    with patch("os.DirEntry.stat", side_effect=OSError("Permission denied")):
+    class BrokenDirEntry:
+        name = "broken"
+        path = str(tmp_path / "broken")
+
+        def stat(self):
+            raise OSError("Permission denied")
+
+    class FakeScandir:
+        def __enter__(self):
+            return iter([BrokenDirEntry()])
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    with patch("os.scandir", return_value=FakeScandir()):
         entries = service.listdir(tmp_path)
         assert not entries
 
