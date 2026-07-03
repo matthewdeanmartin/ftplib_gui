@@ -18,7 +18,9 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.14",
 ]
-dependencies = []
+dependencies = [
+    "do_i_need_to_upgrade>=0.0.1",
+]
 
 [project.optional-dependencies]
 # Optional OS-keychain integration for "remember my password".

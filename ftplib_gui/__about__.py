@@ -22,4 +22,4 @@ __keywords__ = ["ftp", "ftps", "gui", "tkinter", "file-transfer"]
 __license__ = "MIT"
 __requires_python__ = ">=3.13"
 __status__ = "4 - Beta"
-__dependencies__: list[str] = []
+__dependencies__ = ["do_i_need_to_upgrade>=0.0.1"]

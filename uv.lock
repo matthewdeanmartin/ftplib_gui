@@ -572,6 +572,18 @@ wheels = [
 ]
 
 [[package]]
+name = "do-i-need-to-upgrade"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bf/cf/f7a23a8acc73a012930d5258443074b423262cc8a6649af8da941267250c/do_i_need_to_upgrade-0.0.1.tar.gz", hash = "sha256:f86ce7468d45590a5bc398b134653dab720174b2d1d1cdc9d7f66d5318a6127a", size = 44978, upload-time = "2026-07-03T16:05:47.307Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f4/f2/9b9c2a2bc4c60d4b51e52b066effcdc55cda8e067184f48a9d9f68bc206f/do_i_need_to_upgrade-0.0.1-py3-none-any.whl", hash = "sha256:5289a48537ccd94a1e888396407a3f0a25fee5e42edf9fbfcae54911425a2d6b", size = 44870, upload-time = "2026-07-03T16:05:46.028Z" },
+]
+
+[[package]]
 name = "docopt-ng"
 version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -683,6 +695,9 @@ wheels = [
 name = "ftplib-gui"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "do-i-need-to-upgrade" },
+]
 
 [package.optional-dependencies]
 keyring = [
@@ -746,6 +761,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "do-i-need-to-upgrade", specifier = ">=0.0.1" },
     { name = "keyring", marker = "extra == 'keyring'", specifier = ">=24.0" },
     { name = "pyftpdlib", marker = "extra == 'pyftpdlib'", specifier = ">=2.0" },
     { name = "python-ftp-server", marker = "extra == 'python-ftp-server'", specifier = ">=1.3" },

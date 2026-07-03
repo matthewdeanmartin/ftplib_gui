@@ -8,6 +8,7 @@ from ftplib_gui.__about__ import __description__, __version__
 from ftplib_gui.app import main as app_main
 from ftplib_gui.logging_utils import app_data_dir, log_file_path
 from ftplib_gui.profiles import ProfileStore
+from ftplib_gui.upgrade_integration import add_commands, run_command
 
 
 def _add_gui_arguments(parser: argparse.ArgumentParser) -> None:
@@ -93,24 +94,29 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     subparsers.add_parser("profiles", help="List saved connection profiles")
+    add_commands(subparsers)
     return parser
 
 
-def main(argv: list[str] | None = None) -> None:
+def main(argv: list[str] | None = None) -> int:
     """Run the ftplib_gui CLI and launch the GUI."""
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    if (result := run_command(args)) is not None:
+        return result
+
     if args.command == "paths":
         _print_paths(args.selection)
-        return
+        return 0
 
     if args.command == "profiles":
         _list_profiles()
-        return
+        return 0
 
     app_main(args)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

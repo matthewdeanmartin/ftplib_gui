@@ -30,6 +30,7 @@ from ftplib_gui.server import EmbeddedFTPServer, ServerConfig, ServerUser
 from ftplib_gui.server import is_available as server_is_available
 from ftplib_gui.transfers import TransferManager
 from ftplib_gui.ui.main_window import MainWindow
+from ftplib_gui.upgrade_integration import exit_report, render_notice, startup_report
 
 PYTHON_FTPLIB_DOC_URL = "https://docs.python.org/3/library/ftplib.html"
 
@@ -645,10 +646,13 @@ class AppController:
 # ----------------------------------------------------------------------
 # entry point
 # ----------------------------------------------------------------------
-def main(args: argparse.Namespace | None = None) -> None:
+def main(args: argparse.Namespace | None = None) -> int:
     """Launch the GUI."""
     debug = bool(args and getattr(args, "debug", False))
     configure_logging(debug=debug)
+    initial_notice = render_notice(startup_report())
+    if initial_notice:
+        print(initial_notice, file=sys.stderr)
 
     try:
         controller = AppController(args=args)
@@ -660,4 +664,10 @@ def main(args: argparse.Namespace | None = None) -> None:
         )
         raise SystemExit(1) from exc
 
-    controller.start()
+    try:
+        controller.start()
+    finally:
+        final_notice = render_notice(exit_report())
+        if final_notice and final_notice != initial_notice:
+            print(final_notice, file=sys.stderr)
+    return 0

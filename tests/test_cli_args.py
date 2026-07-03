@@ -57,3 +57,15 @@ def test_paths_subcommand_defaults_to_all() -> None:
 def test_profiles_subcommand_parses() -> None:
     args = build_parser().parse_args(["profiles"])
     assert args.command == "profiles"
+
+
+def test_upgrade_subcommand_parses() -> None:
+    args = build_parser().parse_args(["upgrade", "--check"])
+    assert args.command == "upgrade"
+    assert args._diu_check is True
+
+
+def test_check_updates_subcommand_parses() -> None:
+    args = build_parser().parse_args(["check-updates", "--no-network"])
+    assert args.command == "check-updates"
+    assert args._diu_no_network is True
