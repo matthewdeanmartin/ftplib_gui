@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wired `do_i_need_to_upgrade` into `ftplib_gui` startup and shutdown so update notices appear in the terminal
 - Added integrated `ftplib_gui upgrade` and `ftplib_gui check-updates` subcommands
 
+### Changed
+
+- Moved `do_i_need_to_upgrade` support behind the optional `ftplib_gui[all]` extra so the base install stays dependency-light
+- Made update integration quietly no-op when the extra is not installed
+
 ## [0.1.0] - 2026-05-02
 
 ### Added

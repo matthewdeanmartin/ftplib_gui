@@ -12,6 +12,7 @@ from ftplib_gui import app
 from ftplib_gui.__about__ import __version__
 from ftplib_gui.cli import main
 from ftplib_gui.models import ConnectionProfile
+from ftplib_gui import upgrade_integration
 
 
 def test_import() -> None:
@@ -68,6 +69,14 @@ def test_upgrade_command_dispatches() -> None:
 
     assert rc == 10
     dispatcher.assert_called_once()
+
+
+def test_missing_upgrade_extra_quietly_skips() -> None:
+    """Without the optional extra, update support should quietly disable itself."""
+    with patch.object(upgrade_integration, "HAS_UPGRADE_SUPPORT", False):
+        assert upgrade_integration.startup_report() is None
+        assert upgrade_integration.exit_report() is None
+        assert upgrade_integration.run_command(object()) is None
 
 
 def test_app_main_prints_distinct_startup_and_exit_notices(capsys: pytest.CaptureFixture[str]) -> None:

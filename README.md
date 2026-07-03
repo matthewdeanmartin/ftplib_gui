@@ -19,6 +19,18 @@ Or with pip:
 pip install ftplib_gui
 ```
 
+Install the optional update-checking integration too:
+
+```bash
+pip install "ftplib_gui[all]"
+```
+
+Or with `pipx`:
+
+```bash
+pipx install "ftplib_gui[all]"
+```
+
 ## Usage
 
 ```bash
@@ -27,6 +39,15 @@ ftplib_gui gui --host ftp.example.com --user alice
 ftplib_gui paths
 ftplib_gui profiles
 ```
+
+If installed with `ftplib_gui[all]`, the app also enables:
+
+```bash
+ftplib_gui upgrade
+ftplib_gui check-updates
+```
+
+Without that optional extra, the GUI still runs normally and quietly skips update-check integration.
 
 ## Contributing
 
