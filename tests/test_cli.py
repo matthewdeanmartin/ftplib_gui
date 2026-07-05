@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
+from typing import cast
 from unittest.mock import patch
 
 import pytest
@@ -78,7 +80,7 @@ def test_missing_upgrade_extra_quietly_skips() -> None:
     with patch.object(upgrade_integration, "HAS_UPGRADE_SUPPORT", False):
         assert upgrade_integration.startup_report() is None
         assert upgrade_integration.exit_report() is None
-        assert upgrade_integration.run_command(object()) is None
+        assert upgrade_integration.run_command(cast(argparse.Namespace, object())) is None
 
 
 def test_app_main_prints_distinct_startup_and_exit_notices(capsys: pytest.CaptureFixture[str]) -> None:

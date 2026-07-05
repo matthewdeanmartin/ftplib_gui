@@ -4,7 +4,16 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from do_i_need_to_upgrade.report import Report
+    from do_i_need_to_upgrade.settings import Settings
+
+add_check_command: Any
+add_upgrade_command: Any
+run_if_upgrade_command: Any
+check_for_updates: Any
 
 try:
     from do_i_need_to_upgrade import add_check_command, add_upgrade_command, run_if_upgrade_command
@@ -18,8 +27,8 @@ except ImportError:
     add_upgrade_command = None
     run_if_upgrade_command = None
     check_for_updates = None
-    Report = Any
-    Settings = Any
+    Report = Any  # type: ignore[assignment,misc]
+    Settings = Any  # type: ignore[assignment,misc]
     HAS_UPGRADE_SUPPORT = False
 
 DIST_NAME = "ftplib_gui"
@@ -48,7 +57,8 @@ def run_command(args: argparse.Namespace) -> int | None:
     if not HAS_UPGRADE_SUPPORT:
         return None
     assert run_if_upgrade_command is not None
-    return run_if_upgrade_command(args)
+    result: int | None = run_if_upgrade_command(args)
+    return result
 
 
 def startup_report() -> Report | None:
