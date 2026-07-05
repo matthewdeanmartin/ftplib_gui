@@ -1240,7 +1240,7 @@ dev = [
     { name = "keepachangelog-manager-fork", extras = ["all"], marker = "python_full_version < '3.15'", specifier = ">=6.5.0" },
     { name = "linkcheckmd", specifier = ">=1.4.0" },
     { name = "mdformat", marker = "python_full_version >= '3.10'", specifier = ">=1.0.0" },
-    { name = "metametameta", specifier = ">=0.1.5" },
+    { name = "metametameta", specifier = ">=0.1.14" },
     { name = "mkdocs", specifier = ">=1.6.0" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.26.0" },
     { name = "mypy", specifier = ">=1.18.0" },
@@ -2285,7 +2285,7 @@ wheels = [
 
 [[package]]
 name = "metametameta"
-version = "0.1.9"
+version = "0.1.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorlog" },
@@ -2293,9 +2293,9 @@ dependencies = [
     { name = "toml" },
     { name = "totalhelp" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d2/71/f79a0f0338f32cc40a910ff45383dec0a3a6143d8ec78da36b31f1fe7f8f/metametameta-0.1.9.tar.gz", hash = "sha256:079bf78bf64b42e2194d8df17335143ad9434066b5e74f6de1c51162e6b78476", size = 31591, upload-time = "2026-04-27T02:18:06.722Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/e1/3adee847a9f0e8ad19d2b97adde18e1dc45883b1007000b2a23503d9b7c5/metametameta-0.1.14.tar.gz", hash = "sha256:a76d81383bd1c159fd12ddb3d3af45236bfd48a90c9f617debe293bcbe4ec03b", size = 35054, upload-time = "2026-07-04T21:28:41.981Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8e/ab/d27c613b449cb5e5d6d334381c380a147421d9cfe8bdc7087ed7077eeb3c/metametameta-0.1.9-py3-none-any.whl", hash = "sha256:54913a5b3ce90793cb3bf17c8b4abbc758d7df5da5d30b0e7dd15c1e258c5f03", size = 39947, upload-time = "2026-04-27T02:18:05.098Z" },
+    { url = "https://files.pythonhosted.org/packages/32/be/9fb9be93101ce71458652f16e71d12797f7747858007e117e6d5916e5b92/metametameta-0.1.14-py3-none-any.whl", hash = "sha256:fde0ce2c2ac41b6e335e049526a8af496e7b2748cd12e6456d031515a00398df", size = 43491, upload-time = "2026-07-04T21:28:40.626Z" },
 ]
 
 [[package]]
